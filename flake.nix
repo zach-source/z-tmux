@@ -238,7 +238,7 @@
           workspaceLauncher = pkgs.writeShellScriptBin "tmux-workspace" ''
             #!/usr/bin/env bash
             # Configure via z-tmux.workspacesDir in home-manager module
-            WORKSPACES_DIR="''${WORKSPACES_DIR:-$HOME/repos/workspaces}"
+            WORKSPACES_DIR="''${ZTMUX_WORKSPACES_DIR:-$HOME/repos/workspaces}"
 
             if [ ! -d "$WORKSPACES_DIR" ]; then
               echo "Workspaces directory not found: $WORKSPACES_DIR"
@@ -299,7 +299,7 @@
 
           tmuxpLoader = pkgs.writeShellScriptBin "tmuxp-loader" ''
             #!/usr/bin/env bash
-            TMUXP_DIR="$HOME/.config/tmuxp"
+            TMUXP_DIR="''${ZTMUX_TMUXP_DIR:-$HOME/.config/tmuxp}"
 
             if [ ! -d "$TMUXP_DIR" ]; then
               echo "No tmuxp configs found at $TMUXP_DIR"
@@ -333,10 +333,10 @@
           tmuxpExportScript = pkgs.writeShellScriptBin "tmux-save-layout" ''
             #!/usr/bin/env bash
             SESSION_NAME=$(tmux display-message -p '#S')
-            OUTPUT_DIR="$HOME/.config/tmuxp"
-            OUTPUT_FILE="$OUTPUT_DIR/$SESSION_NAME.yaml"
+            TMUXP_DIR="''${ZTMUX_TMUXP_DIR:-$HOME/.config/tmuxp}"
+            OUTPUT_FILE="$TMUXP_DIR/$SESSION_NAME.yaml"
 
-            mkdir -p "$OUTPUT_DIR"
+            mkdir -p "$TMUXP_DIR"
 
             if command -v tmuxp >/dev/null 2>&1; then
               tmuxp freeze -o "$OUTPUT_FILE" -y
@@ -463,8 +463,8 @@
             run-shell ${pluginsDir}/tmux-sensible/sensible.tmux
             run-shell ${pluginsDir}/tmux-yank/yank.tmux
 
-            # Resurrect
-            set -g @resurrect-dir '~/.tmux/resurrect'
+            # Resurrect (configurable via ZTMUX_RESURRECT_DIR env var)
+            set -g @resurrect-dir "$ZTMUX_RESURRECT_DIR"
             set -g @resurrect-capture-pane-contents 'on'
             set -g @resurrect-strategy-ssh 'off'
             set -g @resurrect-strategy-mosh 'off'
@@ -483,7 +483,7 @@
 
             # Optional plugins
             run-shell ${pluginsDir}/tmux-cowboy/cowboy.tmux
-            set -g @logging-path "$HOME/.tmux/logs"
+            set -g @logging-path "$ZTMUX_LOGGING_PATH"
             run-shell ${pluginsDir}/tmux-logging/logging.tmux
             run-shell ${pluginsDir}/tmux-copycat/copycat.tmux
 
@@ -501,6 +501,12 @@
           test = pkgs.writeShellScriptBin "z-tmux-test" ''
             export TMUX_PLUGIN_MANAGER_PATH="${pluginsDir}"
             export PATH="${workspaceLauncher}/bin:${tmuxpLoader}/bin:${tmuxpExportScript}/bin:${splitWindowScript}/bin:${claudeDevScript}/bin:$PATH"
+
+            # Configurable paths (override via ZTMUX_* environment variables)
+            export ZTMUX_WORKSPACES_DIR="''${ZTMUX_WORKSPACES_DIR:-$HOME/repos/workspaces}"
+            export ZTMUX_TMUXP_DIR="''${ZTMUX_TMUXP_DIR:-$HOME/.config/tmuxp}"
+            export ZTMUX_RESURRECT_DIR="''${ZTMUX_RESURRECT_DIR:-$HOME/.tmux/resurrect}"
+            export ZTMUX_LOGGING_PATH="''${ZTMUX_LOGGING_PATH:-$HOME/.tmux/logs}"
 
             if [ -n "$TMUX" ]; then
               echo "Already in tmux. Run: tmux source-file ~/.tmux.conf"
