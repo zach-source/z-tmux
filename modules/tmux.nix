@@ -289,6 +289,45 @@ let
     fi
   '';
 
+  # Split window - new window with two vertical panes
+  splitWindowScript = pkgs.writeShellScriptBin "tmux-split-window" ''
+    #!/usr/bin/env bash
+    # Create a new tmux window with two vertical panes
+
+    TMUX_BIN="$(command -v tmux)"
+    WINDOW_NAME="''${1:-split}"
+    WORK_DIR="$(pwd)"
+
+    "$TMUX_BIN" new-window -n "$WINDOW_NAME" -c "$WORK_DIR" \; \
+      split-window -h -c "$WORK_DIR" \; \
+      select-pane -L
+  '';
+
+  # Claude dev - nvim on left, claude on right
+  claudeDevScript = pkgs.writeShellScriptBin "tmux-claude-dev" ''
+    #!/usr/bin/env bash
+    # Create a new tmux window with nvim on left and claude on right
+
+    TMUX_BIN="$(command -v tmux)"
+    WORK_DIR="$(pwd)"
+
+    # Determine which claude command to use
+    if command -v claude-smart >/dev/null 2>&1; then
+      CLAUDE_CMD="claude-smart"
+    elif command -v claude >/dev/null 2>&1; then
+      CLAUDE_CMD="claude"
+    else
+      "$TMUX_BIN" display-message "Error: neither claude-smart nor claude found in PATH"
+      exit 1
+    fi
+
+    "$TMUX_BIN" new-window -n "claude-dev" -c "$WORK_DIR" \; \
+      send-keys "nvim ." Enter \; \
+      split-window -h -c "$WORK_DIR" \; \
+      send-keys "$CLAUDE_CMD" Enter \; \
+      select-pane -L
+  '';
+
   # ══════════════════════════════════════════════════════════════════════════
   # Which-Key Init Generator
   # ══════════════════════════════════════════════════════════════════════════
@@ -678,6 +717,8 @@ in
     home.packages = [
       cfg.package
       workspaceLauncher
+      splitWindowScript
+      claudeDevScript
     ]
     ++ lib.optional cfg.enableTmuxp tmuxpLoader
     ++ lib.optional cfg.enableTmuxp tmuxpExportScript

@@ -34,6 +34,12 @@ macros:
   - name: workspace-launcher
     commands:
       - display-popup -E -w 80% -h 60% "tmux-workspace"
+  - name: split-window
+    commands:
+      - run-shell "tmux-split-window"
+  - name: claude-dev
+    commands:
+      - run-shell "tmux-claude-dev"
 
 items:
   # Quick actions
@@ -52,6 +58,12 @@ items:
   - name: " Workspace"
     key: W
     macro: workspace-launcher
+  - name: "󱁐 Split window"
+    key: "\\"
+    macro: split-window
+  - name: " Claude dev"
+    key: C
+    macro: claude-dev
 
   # Copy submenu
   - name: "+Copy"

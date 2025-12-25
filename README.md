@@ -106,6 +106,8 @@ Press `prefix + Space` to open the which-key menu. Menus are organized by catego
 | Key | Menu | Description |
 |-----|------|-------------|
 | `W` | Workspace | Launch workspace picker (zoxide-sorted) |
+| `\` | Split window | New window with two vertical panes |
+| `C` | Claude dev | nvim + claude-smart/claude in split panes |
 | `y` | +Copy | Copy mode, buffers, paste |
 | `/` | +Search | Copycat regex search, URLs, files, IPs |
 | `w` | +Windows | Window management, layouts, splits |
@@ -165,6 +167,18 @@ Features:
 - Sorted by zoxide frecency score
 - Opens new window with two vertical panes
 - Automatically adds to zoxide history
+
+## Development Shortcuts
+
+### Split Window (`prefix + Space`, `\`)
+Creates a new window with two vertical panes, both starting in the current directory.
+
+### Claude Dev (`prefix + Space`, `C`)
+Opens a development window with:
+- **Left pane**: `nvim .` - Opens neovim in the current directory
+- **Right pane**: `claude-smart` (or `claude` if claude-smart isn't available)
+
+Ideal for AI-assisted coding workflows.
 
 ## Plugins Included
 

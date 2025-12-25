@@ -349,6 +349,35 @@
             fi
           '';
 
+          splitWindowScript = pkgs.writeShellScriptBin "tmux-split-window" ''
+            #!/usr/bin/env bash
+            TMUX_BIN="$(command -v tmux)"
+            WINDOW_NAME="''${1:-split}"
+            WORK_DIR="$(pwd)"
+            "$TMUX_BIN" new-window -n "$WINDOW_NAME" -c "$WORK_DIR" \; \
+              split-window -h -c "$WORK_DIR" \; \
+              select-pane -L
+          '';
+
+          claudeDevScript = pkgs.writeShellScriptBin "tmux-claude-dev" ''
+            #!/usr/bin/env bash
+            TMUX_BIN="$(command -v tmux)"
+            WORK_DIR="$(pwd)"
+            if command -v claude-smart >/dev/null 2>&1; then
+              CLAUDE_CMD="claude-smart"
+            elif command -v claude >/dev/null 2>&1; then
+              CLAUDE_CMD="claude"
+            else
+              "$TMUX_BIN" display-message "Error: neither claude-smart nor claude found in PATH"
+              exit 1
+            fi
+            "$TMUX_BIN" new-window -n "claude-dev" -c "$WORK_DIR" \; \
+              send-keys "nvim ." Enter \; \
+              split-window -h -c "$WORK_DIR" \; \
+              send-keys "$CLAUDE_CMD" Enter \; \
+              select-pane -L
+          '';
+
           # Which-key configuration
           whichKeyConfig = ./tmux/which-key-config.yaml;
 
@@ -474,7 +503,7 @@
           # Test package for trying out the configuration
           test = pkgs.writeShellScriptBin "z-tmux-test" ''
             export TMUX_PLUGIN_MANAGER_PATH="${pluginsDir}"
-            export PATH="${workspaceLauncher}/bin:${tmuxpLoader}/bin:${tmuxpExportScript}/bin:$PATH"
+            export PATH="${workspaceLauncher}/bin:${tmuxpLoader}/bin:${tmuxpExportScript}/bin:${splitWindowScript}/bin:${claudeDevScript}/bin:$PATH"
 
             if [ -n "$TMUX" ]; then
               echo "Already in tmux. Run: tmux source-file ~/.tmux.conf"
