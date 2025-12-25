@@ -1,0 +1,225 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# tmux-which-key configuration
+# ══════════════════════════════════════════════════════════════════════════════
+# This config defines the which-key popup menu structure.
+# Press prefix + ? to see available keybindings.
+#
+# Documentation: https://github.com/alexwforsythe/tmux-which-key
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Command aliases for cleaner config
+command_alias:
+  - name: popup
+    command: display-popup -E -w 80% -h 80%
+
+# Title shown at top of which-key popup
+title: " Tmux Commands "
+
+# Position: bottom, top, center
+position: center
+
+# Keybinding groups
+keybindings:
+  # ────────────────────────────────────────────────────────────────────────────
+  # Window Management
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: "Windows"
+    key: "w"
+    menu:
+      - name: "New window"
+        key: "c"
+        command: "new-window -c '#{pane_current_path}'"
+      - name: "Rename window"
+        key: ","
+        command: "command-prompt -I '#W' 'rename-window %%'"
+      - name: "Kill window"
+        key: "&"
+        command: "confirm-before -p 'Kill window #W? (y/n)' kill-window"
+      - separator: true
+      - name: "Previous window"
+        key: "p"
+        command: "previous-window"
+      - name: "Next window"
+        key: "n"
+        command: "next-window"
+      - name: "Last window"
+        key: "l"
+        command: "last-window"
+      - separator: true
+      - name: "Choose window"
+        key: "w"
+        command: "choose-window"
+      - name: "Swap left"
+        key: "<"
+        command: "swap-window -t -1"
+      - name: "Swap right"
+        key: ">"
+        command: "swap-window -t +1"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Pane Management
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: "Panes"
+    key: "p"
+    menu:
+      - name: "Split horizontal"
+        key: "|"
+        command: "split-window -h -c '#{pane_current_path}'"
+      - name: "Split vertical"
+        key: "-"
+        command: "split-window -v -c '#{pane_current_path}'"
+      - separator: true
+      - name: "Navigate left"
+        key: "h"
+        command: "select-pane -L"
+      - name: "Navigate down"
+        key: "j"
+        command: "select-pane -D"
+      - name: "Navigate up"
+        key: "k"
+        command: "select-pane -U"
+      - name: "Navigate right"
+        key: "l"
+        command: "select-pane -R"
+      - separator: true
+      - name: "Resize left"
+        key: "H"
+        command: "resize-pane -L 5"
+      - name: "Resize down"
+        key: "J"
+        command: "resize-pane -D 5"
+      - name: "Resize up"
+        key: "K"
+        command: "resize-pane -U 5"
+      - name: "Resize right"
+        key: "L"
+        command: "resize-pane -R 5"
+      - separator: true
+      - name: "Zoom pane"
+        key: "z"
+        command: "resize-pane -Z"
+      - name: "Kill pane"
+        key: "x"
+        command: "confirm-before -p 'Kill pane? (y/n)' kill-pane"
+      - name: "Swap panes"
+        key: "{"
+        command: "swap-pane -U"
+      - name: "Break pane"
+        key: "!"
+        command: "break-pane"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Session Management
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: "Sessions"
+    key: "s"
+    menu:
+      - name: "New session"
+        key: "n"
+        command: "command-prompt -p 'Session name:' 'new-session -s %%'"
+      - name: "Rename session"
+        key: "$"
+        command: "command-prompt -I '#S' 'rename-session %%'"
+      - name: "Kill session"
+        key: "X"
+        command: "confirm-before -p 'Kill session #S? (y/n)' kill-session"
+      - separator: true
+      - name: "Choose session"
+        key: "s"
+        command: "choose-tree -sZ"
+      - name: "Detach"
+        key: "d"
+        command: "detach-client"
+      - name: "Last session"
+        key: "l"
+        command: "switch-client -l"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Layouts
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: "Layouts"
+    key: "l"
+    menu:
+      - name: "Even horizontal"
+        key: "1"
+        command: "select-layout even-horizontal"
+      - name: "Even vertical"
+        key: "2"
+        command: "select-layout even-vertical"
+      - name: "Main horizontal"
+        key: "3"
+        command: "select-layout main-horizontal"
+      - name: "Main vertical"
+        key: "4"
+        command: "select-layout main-vertical"
+      - name: "Tiled"
+        key: "5"
+        command: "select-layout tiled"
+      - separator: true
+      - name: "Next layout"
+        key: "Space"
+        command: "next-layout"
+      - name: "Rotate panes"
+        key: "r"
+        command: "rotate-window"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Utilities
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: "Utils"
+    key: "u"
+    menu:
+      - name: "Popup terminal"
+        key: "p"
+        command: "popup"
+      - name: "Reload config"
+        key: "r"
+        command: "source-file ~/.tmux.conf; display 'Config reloaded!'"
+      - name: "Toggle status"
+        key: "b"
+        command: "set -g status"
+      - name: "Clear history"
+        key: "k"
+        command: "clear-history"
+      - separator: true
+      - name: "Sync panes"
+        key: "S"
+        command: "setw synchronize-panes"
+      - name: "Show time"
+        key: "t"
+        command: "clock-mode"
+      - name: "List keys"
+        key: "?"
+        command: "list-keys"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Session Persistence
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: "Resurrect"
+    key: "r"
+    menu:
+      - name: "Save session"
+        key: "s"
+        command: "run-shell ~/.tmux/plugins/tmux-resurrect/scripts/save.sh"
+      - name: "Restore session"
+        key: "r"
+        command: "run-shell ~/.tmux/plugins/tmux-resurrect/scripts/restore.sh"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Copy Mode
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: "Copy"
+    key: "c"
+    menu:
+      - name: "Enter copy mode"
+        key: "["
+        command: "copy-mode"
+      - name: "Paste buffer"
+        key: "]"
+        command: "paste-buffer"
+      - name: "List buffers"
+        key: "#"
+        command: "list-buffers"
+      - name: "Choose buffer"
+        key: "="
+        command: "choose-buffer"

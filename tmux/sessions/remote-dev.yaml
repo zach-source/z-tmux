@@ -1,0 +1,77 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# remote-dev.yaml - Example tmuxp session for remote development
+# ══════════════════════════════════════════════════════════════════════════════
+# Usage: tmuxp load remote-dev
+#
+# This session template demonstrates a multi-window layout for remote work.
+# Customize the server addresses and commands for your environment.
+# ══════════════════════════════════════════════════════════════════════════════
+
+session_name: remote-dev
+start_directory: ~/
+
+# Environment variables available in all windows
+environment:
+  EDITOR: nvim
+
+windows:
+  # ────────────────────────────────────────────────────────────────────────────
+  # Main development window
+  # ────────────────────────────────────────────────────────────────────────────
+  - window_name: editor
+    layout: main-vertical
+    options:
+      main-pane-width: 60%
+    panes:
+      - shell_command:
+          - nvim
+      - shell_command:
+          - ""  # Empty shell for commands
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Terminal window with horizontal split
+  # ────────────────────────────────────────────────────────────────────────────
+  - window_name: term
+    layout: even-horizontal
+    panes:
+      - shell_command:
+          - ""
+      - shell_command:
+          - ""
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Remote servers (via mosh for resilience)
+  # ────────────────────────────────────────────────────────────────────────────
+  # Uncomment and customize for your servers:
+  #
+  # - window_name: servers
+  #   layout: tiled
+  #   panes:
+  #     - shell_command:
+  #         - mosh user@server1.example.com
+  #     - shell_command:
+  #         - mosh user@server2.example.com
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Logs / monitoring
+  # ────────────────────────────────────────────────────────────────────────────
+  - window_name: logs
+    panes:
+      - shell_command:
+          - ""  # Placeholder - add your log commands
+          # Examples:
+          # - tail -f /var/log/syslog
+          # - mosh user@server -- journalctl -f
+          # - docker logs -f container_name
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Git operations
+  # ────────────────────────────────────────────────────────────────────────────
+  - window_name: git
+    start_directory: ~/
+    panes:
+      - shell_command:
+          - git status
+
+# Focus the editor window on session start
+focus: editor
