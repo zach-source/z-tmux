@@ -22,22 +22,22 @@ custom_variables:
     value: "#[fg=#fab387,italics] ⚠#[default]"
 
 macros:
-  - name: reload-config
+  - name: ztmux-reload
     commands:
       - display "#{log_info} Reloading..."
       - source-file ~/.tmux.conf
       - display "#{log_info} Config reloaded!"
-  - name: restart-pane
+  - name: ztmux-restart-pane
     commands:
       - display "#{log_info} Respawning pane..."
       - respawn-pane -k -c "#{pane_current_path}"
-  - name: workspace-launcher
+  - name: ztmux-workspace
     commands:
       - display-popup -E -w 80% -h 60% "tmux-workspace"
-  - name: new-split-window
+  - name: ztmux-split
     commands:
       - run-shell "tmux-split-window"
-  - name: claude-dev
+  - name: ztmux-claude-dev
     commands:
       - run-shell "tmux-claude-dev"
 
@@ -55,15 +55,15 @@ items:
   - separator: true
 
   # Workspace launcher
-  - name: " Workspace"
+  - name: "Workspace"
     key: W
-    macro: workspace-launcher
-  - name: "󱁐 Split window"
-    key: "\\"
-    macro: new-split-window
-  - name: " Claude dev"
+    macro: ztmux-workspace
+  - name: "Split"
+    key: "|"
+    macro: ztmux-split
+  - name: "Claude-dev"
     key: C
-    macro: claude-dev
+    macro: ztmux-claude-dev
 
   # Copy submenu
   - name: "+Copy"
@@ -174,7 +174,7 @@ items:
         command: command-prompt -I "#W" "rename-window '%%'"
       - name: Kill
         key: X
-        command: confirm -p "Kill window #W? (y/n)" kill-window
+        command: confirm -p "Kill this window? (y/n)" kill-window
 
   # Panes submenu with resize
   - name: "+Panes"
@@ -249,13 +249,13 @@ items:
         command: break-pane
       - name: Respawn
         key: R
-        macro: restart-pane
+        macro: ztmux-restart-pane
       - name: "󰚌 Kill process"
         key: "*"
         command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-cowboy/scripts/kill_process.sh"
       - name: Kill pane
         key: X
-        command: confirm -p "Kill pane #P? (y/n)" kill-pane
+        command: confirm -p "Kill this pane? (y/n)" kill-pane
 
   # Sessions submenu with tmuxp
   - name: "+Sessions"
@@ -316,7 +316,7 @@ items:
         command: detach-client
       - name: Kill
         key: X
-        command: confirm -p "Kill session #S? (y/n)" kill-session
+        command: confirm -p "Kill this session? (y/n)" kill-session
 
   # System submenu
   - name: "+System"
@@ -331,7 +331,7 @@ items:
       - separator: true
       - name: Reload config
         key: r
-        macro: reload-config
+        macro: ztmux-reload
       - separator: true
       - name: "+Logging"
         key: l
@@ -364,4 +364,4 @@ items:
   - separator: true
   - name: " Reload"
     key: R
-    macro: reload-config
+    macro: ztmux-reload
