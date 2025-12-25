@@ -34,7 +34,7 @@ macros:
   - name: workspace-launcher
     commands:
       - display-popup -E -w 80% -h 60% "tmux-workspace"
-  - name: split-window
+  - name: new-split-window
     commands:
       - run-shell "tmux-split-window"
   - name: claude-dev
@@ -60,7 +60,7 @@ items:
     macro: workspace-launcher
   - name: "󱁐 Split window"
     key: "\\"
-    macro: split-window
+    macro: new-split-window
   - name: " Claude dev"
     key: C
     macro: claude-dev
@@ -92,25 +92,25 @@ items:
     menu:
       - name: "Regex search"
         key: "/"
-        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_search.sh"
       - name: "󰈔 Files"
         key: f
-        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_file_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_file_search.sh"
       - name: " URLs"
         key: u
-        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_url_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_url_search.sh"
       - name: "󰊕 Git files"
         key: g
-        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_git_special.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_git_special.sh"
       - name: " Digits"
         key: d
-        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_digit_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_digit_search.sh"
       - name: " Hashes"
         key: h
-        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_hash_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_hash_search.sh"
       - name: "󰇥 IP addresses"
         key: i
-        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_ip_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_ip_search.sh"
 
   # Windows submenu
   - name: "+Windows"
@@ -252,7 +252,7 @@ items:
         macro: restart-pane
       - name: "󰚌 Kill process"
         key: "*"
-        command: run-shell "~/.tmux/plugins/tmux-cowboy/scripts/kill_process.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-cowboy/scripts/kill_process.sh"
       - name: Kill pane
         key: X
         command: confirm -p "Kill pane #P? (y/n)" kill-pane
@@ -296,17 +296,17 @@ items:
             command: switch-client -l
           - name: Switch (fzf)
             key: s
-            command: run-shell "~/.tmux/plugins/tmux-sessionist/scripts/goto_session.sh"
+            command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-sessionist/scripts/goto_session.sh"
           - name: Create
             key: C
-            command: run-shell "~/.tmux/plugins/tmux-sessionist/scripts/new_session_prompt.sh"
+            command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-sessionist/scripts/new_session_prompt.sh"
           - name: Kill other
             key: X
-            command: run-shell "~/.tmux/plugins/tmux-sessionist/scripts/kill_session_prompt.sh"
+            command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-sessionist/scripts/kill_session_prompt.sh"
           - separator: true
           - name: Promote pane
             key: "@"
-            command: run-shell "~/.tmux/plugins/tmux-sessionist/scripts/promote_pane.sh"
+            command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-sessionist/scripts/promote_pane.sh"
           - name: Join pane here
             key: "t"
             command: choose-tree -Zw "join-pane -s '%%'"
@@ -338,17 +338,17 @@ items:
         menu:
           - name: Toggle pane log
             key: P
-            command: run-shell "~/.tmux/plugins/tmux-logging/scripts/toggle_logging.sh"
+            command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-logging/scripts/toggle_logging.sh"
           - name: Save history
             key: h
-            command: run-shell "~/.tmux/plugins/tmux-logging/scripts/save_complete_history.sh"
+            command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-logging/scripts/save_complete_history.sh"
           - name: Screenshot (text)
             key: s
-            command: run-shell "~/.tmux/plugins/tmux-logging/scripts/screen_capture.sh"
+            command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-logging/scripts/screen_capture.sh"
           - separator: true
           - name: Clear history
             key: c
-            command: run-shell "~/.tmux/plugins/tmux-logging/scripts/clear_history.sh"
+            command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-logging/scripts/clear_history.sh"
       - separator: true
       - name: Detach
         key: d

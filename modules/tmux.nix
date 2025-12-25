@@ -232,9 +232,9 @@ let
   # tmuxp session loader
   tmuxpLoader = pkgs.writeShellScriptBin "tmuxp-loader" ''
     #!/usr/bin/env bash
-    # Load a tmuxp session from ~/.config/tmuxp/
+    # Load a tmuxp session
 
-    TMUXP_DIR="$HOME/.config/tmuxp"
+    TMUXP_DIR="${cfg.tmuxpDir}"
 
     if [ ! -d "$TMUXP_DIR" ]; then
       echo "No tmuxp configs found at $TMUXP_DIR"
@@ -271,7 +271,7 @@ let
     # Export current tmux session to tmuxp format
 
     SESSION_NAME=$(tmux display-message -p '#S')
-    OUTPUT_DIR="$HOME/.config/tmuxp"
+    OUTPUT_DIR="${cfg.tmuxpDir}"
     OUTPUT_FILE="$OUTPUT_DIR/$SESSION_NAME.yaml"
 
     mkdir -p "$OUTPUT_DIR"
@@ -515,7 +515,7 @@ let
 
     ${lib.optionalString cfg.plugins.resurrect ''
       # Resurrect (session persistence)
-      set -g @resurrect-dir '~/.tmux/resurrect'
+      set -g @resurrect-dir '${cfg.resurrectDir}'
       set -g @resurrect-capture-pane-contents 'on'
       # Disable process restoration strategies to avoid Nix path issues
       set -g @resurrect-strategy-ssh 'off'
@@ -550,7 +550,7 @@ let
 
     ${lib.optionalString cfg.plugins.logging ''
       # Logging (pane capture)
-      set -g @logging-path "$HOME/.tmux/logs"
+      set -g @logging-path "${cfg.loggingPath}"
       run-shell ${pluginsDir}/tmux-logging/logging.tmux
     ''}
 
@@ -634,6 +634,24 @@ in
       type = lib.types.str;
       default = "$HOME/repos/workspaces";
       description = "Directory containing workspace repositories for the launcher";
+    };
+
+    resurrectDir = lib.mkOption {
+      type = lib.types.str;
+      default = "~/.tmux/resurrect";
+      description = "Directory for tmux-resurrect session storage";
+    };
+
+    loggingPath = lib.mkOption {
+      type = lib.types.str;
+      default = "$HOME/.tmux/logs";
+      description = "Directory for tmux-logging output";
+    };
+
+    tmuxpDir = lib.mkOption {
+      type = lib.types.str;
+      default = "$HOME/.config/tmuxp";
+      description = "Directory for tmuxp session configurations";
     };
 
     # ════════════════════════════════════════════════════════════════════════

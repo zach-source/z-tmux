@@ -68,6 +68,9 @@ Import and enable in your home configuration:
 | `z-tmux.enableTmuxp` | bool | `true` | Install tmuxp for session management |
 | `z-tmux.extraConfig` | lines | `""` | Extra tmux configuration lines |
 | `z-tmux.workspacesDir` | string | `"$HOME/repos/workspaces"` | Directory for workspace launcher |
+| `z-tmux.resurrectDir` | string | `"~/.tmux/resurrect"` | Directory for session persistence |
+| `z-tmux.loggingPath` | string | `"$HOME/.tmux/logs"` | Directory for pane logging output |
+| `z-tmux.tmuxpDir` | string | `"$HOME/.config/tmuxp"` | Directory for tmuxp configurations |
 
 ### Plugin Options
 
