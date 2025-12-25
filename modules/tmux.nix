@@ -100,59 +100,61 @@ let
   };
 
   # ══════════════════════════════════════════════════════════════════════════
-  # Plugin Bundle
+  # Plugin Bundle (dynamic based on enabled plugins)
   # ══════════════════════════════════════════════════════════════════════════
 
-  pluginsDir = pkgs.linkFarm "tmux-plugins" [
+  pluginsList = [
     {
       name = "tpm";
       path = tpm;
     }
-    {
-      name = "tmux-resurrect";
-      path = tmuxResurrect;
-    }
-    {
-      name = "tmux-continuum";
-      path = tmuxContinuum;
-    }
-    {
-      name = "tmux-sensible";
-      path = tmuxSensible;
-    }
-    {
-      name = "tmux-yank";
-      path = tmuxYank;
-    }
-    {
-      name = "tmux-prefix-highlight";
-      path = tmuxPrefixHighlight;
-    }
-    {
-      name = "tmux-which-key";
-      path = tmuxWhichKey;
-    }
-    {
-      name = "tmux-open";
-      path = tmuxOpen;
-    }
-    {
-      name = "tmux-sessionist";
-      path = tmuxSessionist;
-    }
-    {
-      name = "tmux-cowboy";
-      path = tmuxCowboy;
-    }
-    {
-      name = "tmux-logging";
-      path = tmuxLogging;
-    }
-    {
-      name = "tmux-copycat";
-      path = tmuxCopycat;
-    }
-  ];
+  ]
+  ++ lib.optional cfg.plugins.sensible {
+    name = "tmux-sensible";
+    path = tmuxSensible;
+  }
+  ++ lib.optional cfg.plugins.yank {
+    name = "tmux-yank";
+    path = tmuxYank;
+  }
+  ++ lib.optional cfg.plugins.resurrect {
+    name = "tmux-resurrect";
+    path = tmuxResurrect;
+  }
+  ++ lib.optional cfg.plugins.continuum {
+    name = "tmux-continuum";
+    path = tmuxContinuum;
+  }
+  ++ lib.optional cfg.plugins.prefixHighlight {
+    name = "tmux-prefix-highlight";
+    path = tmuxPrefixHighlight;
+  }
+  ++ lib.optional cfg.plugins.open {
+    name = "tmux-open";
+    path = tmuxOpen;
+  }
+  ++ lib.optional cfg.plugins.sessionist {
+    name = "tmux-sessionist";
+    path = tmuxSessionist;
+  }
+  ++ lib.optional cfg.plugins.cowboy {
+    name = "tmux-cowboy";
+    path = tmuxCowboy;
+  }
+  ++ lib.optional cfg.plugins.logging {
+    name = "tmux-logging";
+    path = tmuxLogging;
+  }
+  ++ lib.optional cfg.plugins.copycat {
+    name = "tmux-copycat";
+    path = tmuxCopycat;
+  }
+  ++ lib.optional cfg.plugins.whichKey {
+    name = "tmux-which-key";
+    path = tmuxWhichKey;
+  };
+
+  pluginsDir = pkgs.linkFarm "tmux-plugins" pluginsList;
 
   # ══════════════════════════════════════════════════════════════════════════
   # Helper Scripts
@@ -467,42 +469,68 @@ let
     # Plugin path
     set-environment -g TMUX_PLUGIN_MANAGER_PATH "${pluginsDir}"
 
-    # Sensible defaults
-    run-shell ${pluginsDir}/tmux-sensible/sensible.tmux
+    ${lib.optionalString cfg.plugins.sensible ''
+      # Sensible defaults
+      run-shell ${pluginsDir}/tmux-sensible/sensible.tmux
+    ''}
 
-    # Yank (clipboard)
-    run-shell ${pluginsDir}/tmux-yank/yank.tmux
+    ${lib.optionalString cfg.plugins.yank ''
+      # Yank (clipboard)
+      run-shell ${pluginsDir}/tmux-yank/yank.tmux
+    ''}
 
-    # Resurrect (session persistence)
-    set -g @resurrect-dir '~/.tmux/resurrect'
-    set -g @resurrect-capture-pane-contents 'on'
-    # Disable process restoration strategies to avoid Nix path issues
-    set -g @resurrect-strategy-ssh 'off'
-    set -g @resurrect-strategy-mosh 'off'
-    # Manual save/restore keybindings
-    bind C-s run-shell "${pluginsDir}/tmux-resurrect/scripts/save.sh" \; display "Session saved"
-    bind C-r run-shell "${pluginsDir}/tmux-resurrect/scripts/restore.sh" \; display "Session restored"
-    run-shell ${pluginsDir}/tmux-resurrect/resurrect.tmux
+    ${lib.optionalString cfg.plugins.resurrect ''
+      # Resurrect (session persistence)
+      set -g @resurrect-dir '~/.tmux/resurrect'
+      set -g @resurrect-capture-pane-contents 'on'
+      # Disable process restoration strategies to avoid Nix path issues
+      set -g @resurrect-strategy-ssh 'off'
+      set -g @resurrect-strategy-mosh 'off'
+      # Manual save/restore keybindings
+      bind C-s run-shell "${pluginsDir}/tmux-resurrect/scripts/save.sh" \; display "Session saved"
+      bind C-r run-shell "${pluginsDir}/tmux-resurrect/scripts/restore.sh" \; display "Session restored"
+      run-shell ${pluginsDir}/tmux-resurrect/resurrect.tmux
+    ''}
 
-    # Continuum (auto-save)
-    set -g @continuum-save-interval '${toString cfg.saveInterval}'
-    set -g @continuum-restore 'off'
-    run-shell ${pluginsDir}/tmux-continuum/continuum.tmux
+    ${lib.optionalString cfg.plugins.continuum ''
+      # Continuum (auto-save)
+      set -g @continuum-save-interval '${toString cfg.saveInterval}'
+      set -g @continuum-restore 'off'
+      run-shell ${pluginsDir}/tmux-continuum/continuum.tmux
+    ''}
 
-    # High value plugins
-    run-shell ${pluginsDir}/tmux-open/open.tmux
-    run-shell ${pluginsDir}/tmux-sessionist/sessionist.tmux
+    ${lib.optionalString cfg.plugins.open ''
+      # Open (URLs/files from copy mode)
+      run-shell ${pluginsDir}/tmux-open/open.tmux
+    ''}
 
-    # Optional plugins
-    run-shell ${pluginsDir}/tmux-cowboy/cowboy.tmux
-    set -g @logging-path "$HOME/.tmux/logs"
-    run-shell ${pluginsDir}/tmux-logging/logging.tmux
-    run-shell ${pluginsDir}/tmux-copycat/copycat.tmux
+    ${lib.optionalString cfg.plugins.sessionist ''
+      # Sessionist (session management)
+      run-shell ${pluginsDir}/tmux-sessionist/sessionist.tmux
+    ''}
 
-    # Which-key (must load after other plugins for keybind discovery)
-    set -g @tmux-which-key-xdg-enable 1
-    set -g @tmux-which-key-disable-autobuild 1
-    run-shell ${pluginsDir}/tmux-which-key/plugin.sh.tmux
+    ${lib.optionalString cfg.plugins.cowboy ''
+      # Cowboy (kill unresponsive processes)
+      run-shell ${pluginsDir}/tmux-cowboy/cowboy.tmux
+    ''}
+
+    ${lib.optionalString cfg.plugins.logging ''
+      # Logging (pane capture)
+      set -g @logging-path "$HOME/.tmux/logs"
+      run-shell ${pluginsDir}/tmux-logging/logging.tmux
+    ''}
+
+    ${lib.optionalString cfg.plugins.copycat ''
+      # Copycat (regex search)
+      run-shell ${pluginsDir}/tmux-copycat/copycat.tmux
+    ''}
+
+    ${lib.optionalString cfg.plugins.whichKey ''
+      # Which-key (must load after other plugins for keybind discovery)
+      set -g @tmux-which-key-xdg-enable 1
+      set -g @tmux-which-key-disable-autobuild 1
+      run-shell ${pluginsDir}/tmux-which-key/plugin.sh.tmux
+    ''}
 
     # ══════════════════════════════════════════════════════════════════════
     # Extra Configuration
@@ -519,6 +547,13 @@ in
 
   options.z-tmux = {
     enable = lib.mkEnableOption "z-tmux configuration";
+
+    package = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.tmux;
+      defaultText = lib.literalExpression "pkgs.tmux";
+      description = "The tmux package to use";
+    };
 
     prefix = lib.mkOption {
       type = lib.types.str;
@@ -560,6 +595,78 @@ in
       default = "";
       description = "Extra tmux configuration appended to the config file";
     };
+
+    # ════════════════════════════════════════════════════════════════════════
+    # Plugin Options
+    # ════════════════════════════════════════════════════════════════════════
+
+    plugins = {
+      sensible = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-sensible (sensible defaults)";
+      };
+
+      yank = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-yank (clipboard integration)";
+      };
+
+      resurrect = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-resurrect (session persistence)";
+      };
+
+      continuum = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-continuum (auto-save sessions)";
+      };
+
+      open = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-open (open URLs/files from copy mode)";
+      };
+
+      sessionist = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-sessionist (session management utilities)";
+      };
+
+      copycat = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-copycat (regex search in scrollback)";
+      };
+
+      cowboy = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-cowboy (kill unresponsive processes)";
+      };
+
+      logging = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-logging (pane logging and capture)";
+      };
+
+      whichKey = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-which-key (discoverable key bindings menu)";
+      };
+
+      prefixHighlight = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable tmux-prefix-highlight (show prefix state in status)";
+      };
+    };
   };
 
   # ══════════════════════════════════════════════════════════════════════════
@@ -569,28 +676,33 @@ in
   config = lib.mkIf cfg.enable {
     # Install packages
     home.packages = [
+      cfg.package
       workspaceLauncher
-      tmuxpLoader
-      tmuxpExportScript
     ]
+    ++ lib.optional cfg.enableTmuxp tmuxpLoader
+    ++ lib.optional cfg.enableTmuxp tmuxpExportScript
     ++ lib.optional cfg.enableMosh pkgs.mosh
     ++ lib.optional cfg.enableTmuxp pkgs.tmuxp;
 
-    # Create required directories
-    home.file.".tmux/resurrect/.keep".text = "";
-    home.file.".tmux/logs/.keep".text = "";
+    # Create required directories (conditional on plugins)
+    home.file.".tmux/resurrect/.keep" = lib.mkIf cfg.plugins.resurrect { text = ""; };
+    home.file.".tmux/logs/.keep" = lib.mkIf cfg.plugins.logging { text = ""; };
 
     # Main tmux configuration (symlink to ~/.tmux.conf for reload-config)
     home.file.".tmux.conf".source = tmuxConf;
 
     # Which-key XDG config (config.yaml for reference)
-    xdg.configFile."tmux/plugins/tmux-which-key/config.yaml".source = whichKeyConfig;
+    xdg.configFile."tmux/plugins/tmux-which-key/config.yaml" = lib.mkIf cfg.plugins.whichKey {
+      source = whichKeyConfig;
+    };
 
     # Which-key XDG data (pre-generated init.tmux)
-    xdg.dataFile."tmux/plugins/tmux-which-key/init.tmux".source = "${whichKeyInit}/init.tmux";
+    xdg.dataFile."tmux/plugins/tmux-which-key/init.tmux" = lib.mkIf cfg.plugins.whichKey {
+      source = "${whichKeyInit}/init.tmux";
+    };
 
     # tmuxp session configs
-    xdg.configFile."tmuxp/.keep".text = "";
+    xdg.configFile."tmuxp/.keep" = lib.mkIf cfg.enableTmuxp { text = ""; };
 
     # NOTE: We don't use programs.tmux because we need full control over plugin loading
     # and the Nix store paths. The config is managed via home.file instead.

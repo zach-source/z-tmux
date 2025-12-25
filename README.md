@@ -55,15 +55,49 @@ Import and enable in your home configuration:
 
 ## Module Options
 
+### Core Options
+
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `z-tmux.enable` | bool | `false` | Enable z-tmux configuration |
+| `z-tmux.package` | package | `pkgs.tmux` | The tmux package to use |
 | `z-tmux.prefix` | string | `"C-b"` | Tmux prefix key |
 | `z-tmux.catppuccinFlavor` | enum | `"mocha"` | Theme: latte/frappe/macchiato/mocha |
 | `z-tmux.saveInterval` | int | `15` | Continuum save interval (minutes) |
 | `z-tmux.enableMosh` | bool | `true` | Install mosh for remote connections |
 | `z-tmux.enableTmuxp` | bool | `true` | Install tmuxp for session management |
 | `z-tmux.extraConfig` | lines | `""` | Extra tmux configuration lines |
+
+### Plugin Options
+
+All plugins are enabled by default. Disable individually as needed:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `z-tmux.plugins.sensible` | `true` | Sensible defaults |
+| `z-tmux.plugins.yank` | `true` | Clipboard integration |
+| `z-tmux.plugins.resurrect` | `true` | Session persistence (save/restore) |
+| `z-tmux.plugins.continuum` | `true` | Auto-save sessions |
+| `z-tmux.plugins.open` | `true` | Open URLs/files from copy mode |
+| `z-tmux.plugins.sessionist` | `true` | Session management utilities |
+| `z-tmux.plugins.copycat` | `true` | Regex search in scrollback |
+| `z-tmux.plugins.cowboy` | `true` | Kill unresponsive processes |
+| `z-tmux.plugins.logging` | `true` | Pane logging and capture |
+| `z-tmux.plugins.whichKey` | `true` | Discoverable key bindings menu |
+| `z-tmux.plugins.prefixHighlight` | `true` | Show prefix state in status |
+
+Example minimal config (disable optional plugins):
+
+```nix
+z-tmux = {
+  enable = true;
+  plugins = {
+    cowboy = false;
+    logging = false;
+    copycat = false;
+  };
+};
+```
 
 ## Which-Key Menu
 

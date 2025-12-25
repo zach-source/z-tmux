@@ -94,15 +94,34 @@ The test script:
 
 When modifying `modules/tmux.nix`, available options are:
 
+### Core Options
+
 | Option | Type | Default |
 |--------|------|---------|
 | `enable` | bool | false |
+| `package` | package | pkgs.tmux |
 | `prefix` | str | "C-b" |
 | `catppuccinFlavor` | enum | "mocha" |
 | `saveInterval` | int | 15 |
 | `enableMosh` | bool | true |
 | `enableTmuxp` | bool | true |
 | `extraConfig` | lines | "" |
+
+### Plugin Options (all default to true)
+
+| Option | Plugin |
+|--------|--------|
+| `plugins.sensible` | tmux-sensible |
+| `plugins.yank` | tmux-yank |
+| `plugins.resurrect` | tmux-resurrect |
+| `plugins.continuum` | tmux-continuum |
+| `plugins.open` | tmux-open |
+| `plugins.sessionist` | tmux-sessionist |
+| `plugins.copycat` | tmux-copycat |
+| `plugins.cowboy` | tmux-cowboy |
+| `plugins.logging` | tmux-logging |
+| `plugins.whichKey` | tmux-which-key |
+| `plugins.prefixHighlight` | tmux-prefix-highlight |
 
 ## Common Tasks
 
