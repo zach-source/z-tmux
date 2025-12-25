@@ -123,6 +123,27 @@ When modifying `modules/tmux.nix`, available options are:
 
 Edit the `catppuccinColors` attrset in `modules/tmux.nix`. Each flavor (latte, frappe, macchiato, mocha) has its own color definitions.
 
+## Version Control
+
+This project uses **jj (jujutsu)** for version control. Common commands:
+
+```bash
+# Check status
+jj status
+
+# Create a new change
+jj new -m "description"
+
+# Describe current change
+jj describe -m "description"
+
+# Push to GitHub
+jj git push --branch main
+
+# Push new branch
+jj git push --branch main --allow-new
+```
+
 ## Gotchas
 
 - **Plugin load order**: tmux-which-key must be loaded LAST (it binds prefix+Space)
