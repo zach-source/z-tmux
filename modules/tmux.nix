@@ -468,8 +468,8 @@ let
     # Key Bindings
     # ══════════════════════════════════════════════════════════════════════
 
-    # Reload config (reload-config is a command alias defined by which-key)
-    bind r reload-config
+    # Reload config
+    bind r source-file ~/.tmux.conf \; display "Config reloaded!"
     bind | split-window -h -c "#{pane_current_path}"
     bind - split-window -v -c "#{pane_current_path}"
     bind c new-window -c "#{pane_current_path}"
