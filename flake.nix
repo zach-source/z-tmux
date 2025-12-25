@@ -287,16 +287,12 @@
             fi
 
             if [ -n "$WORKSPACE" ] && [ -d "$WORKSPACE" ]; then
-              WINDOW_NAME=$(basename "$WORKSPACE")
-              TMUX_BIN="$(command -v tmux)"
-
               if command -v zoxide >/dev/null 2>&1; then
                 zoxide add "$WORKSPACE"
               fi
 
-              "$TMUX_BIN" new-window -n "$WINDOW_NAME" -c "$WORKSPACE" \; \
-                split-window -h -c "$WORKSPACE" \; \
-                select-pane -L
+              # Change to workspace and launch claude-dev
+              cd "$WORKSPACE" && tmux-claude-dev
             fi
           '';
 

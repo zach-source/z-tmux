@@ -165,7 +165,7 @@ Press `prefix + Space`, then `W` to open the workspace launcher.
 Features:
 - Scans `~/repos/workspaces` for git repositories
 - Sorted by zoxide frecency score
-- Opens new window with two vertical panes
+- Opens with Claude dev layout (nvim + claude)
 - Automatically adds to zoxide history
 
 ## Development Shortcuts
