@@ -1,0 +1,32 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# Workspaces Session
+# ══════════════════════════════════════════════════════════════════════════════
+# Load with: tmuxp load workspaces
+# ══════════════════════════════════════════════════════════════════════════════
+
+session_name: workspaces
+
+# Start in the main workspace directory
+start_directory: ~/repos/workspaces
+
+windows:
+  # Main workspace overview
+  - window_name: main
+    start_directory: ~/repos/workspaces
+    panes:
+      - # List workspaces on start
+        shell_command:
+          - ls -la
+
+  # z-tmux project
+  - window_name: z-tmux
+    start_directory: ~/repos/workspaces/z-tmux
+    panes:
+      -
+
+  # Additional workspace windows can be added here
+  # Example:
+  # - window_name: project-name
+  #   start_directory: ~/repos/workspaces/project-name
+  #   panes:
+  #     -

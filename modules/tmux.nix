@@ -8,7 +8,11 @@
 let
   cfg = config.z-tmux;
 
-  # TPM (Tmux Plugin Manager)
+  # ══════════════════════════════════════════════════════════════════════════
+  # Plugin Sources
+  # ══════════════════════════════════════════════════════════════════════════
+
+  # Core plugins
   tpm = pkgs.fetchFromGitHub {
     owner = "tmux-plugins";
     repo = "tpm";
@@ -16,28 +20,510 @@ let
     sha256 = "sha256-CeI9Wq6tHqV68woE11lIY4cLoNY8XWyXyMHTDmFKJKI=";
   };
 
-  # tmux-which-key plugin
+  tmuxResurrect = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-resurrect";
+    rev = "v4.0.0";
+    sha256 = "sha256-44Ok7TbNfssMoBmOAqLLOj7oYRG3AQWrCuLzP8tA8Kg=";
+  };
+
+  tmuxContinuum = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-continuum";
+    rev = "v3.1.0";
+    sha256 = "sha256-e02cshLR9a2+uhrU/oew+FPTKhd4mi0/Q02ToHbbVrE=";
+  };
+
+  tmuxSensible = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-sensible";
+    rev = "v3.0.0";
+    sha256 = "sha256-ney/Y1YtCsWLgthOmoYGZTpPfJz+DravRB31YZgnDuU=";
+  };
+
+  tmuxYank = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-yank";
+    rev = "v2.3.0";
+    sha256 = "sha256-DQQCsBHxOo/BepclkICCtVUAL4pozS/RTJBcVLzICns=";
+  };
+
+  tmuxPrefixHighlight = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-prefix-highlight";
+    rev = "06cbb4ecd3a0a918ce355c70dc56d79debd455c7";
+    sha256 = "sha256-wkMm2Myxau24E0fbXINPuL2dc8E4ZYe5Pa6A0fWhiw4=";
+  };
+
   tmuxWhichKey = pkgs.fetchFromGitHub {
     owner = "alexwforsythe";
     repo = "tmux-which-key";
-    rev = "main";
-    sha256 = "sha256-Dr4G8F5NtrZNlkGkBJ1mpvBAsW7+Rk9YlFkHl8KJiIs=";
+    rev = "1f419775caf136a60aac8e3a269b51ad10b51eb6";
+    sha256 = "sha256-X7FunHrAexDgAlZfN+JOUJvXFZeyVj9yu6WRnxMEA8E=";
   };
+
+  # High value plugins
+  tmuxOpen = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-open";
+    rev = "763d0a852e6703ce0f5090a508330012a7e6788e";
+    sha256 = "sha256-Thii7D21MKodtjn/MzMjOGbJX8BwnS+fQqAtYv8CjPc=";
+  };
+
+  tmuxSessionist = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-sessionist";
+    rev = "a315c423328d9bdf5cf796435ce7075fa5e1bffb";
+    sha256 = "sha256-iC8NvuLujTXw4yZBaenHJ+2uM+HA9aW5b2rQTA8e69s=";
+  };
+
+  # Optional plugins
+  tmuxCowboy = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-cowboy";
+    rev = "75702b6d0a866769dd14f3896e9d19f7e0acd4f2";
+    sha256 = "sha256-KJNsdDLqT2Uzc25U4GLSB2O1SA/PThmDj9Aej5XjmJs=";
+  };
+
+  tmuxLogging = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-logging";
+    rev = "b5c5f7b9bc679ca161a442e932d6186da8d3538f";
+    sha256 = "sha256-NTDUXxy0Y0dp7qmcH5qqqENGvhzd3lLrIii5u0lYHJk=";
+  };
+
+  tmuxCopycat = pkgs.fetchFromGitHub {
+    owner = "tmux-plugins";
+    repo = "tmux-copycat";
+    rev = "d7f7e6c1de0bc0d6915f4beea5be6a8a42045c09";
+    sha256 = "sha256-2dMu/kbKLI/+kO05+qmeuJtAvvO7k9SSF+o2MHNllFk=";
+  };
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # Plugin Bundle
+  # ══════════════════════════════════════════════════════════════════════════
+
+  pluginsDir = pkgs.linkFarm "tmux-plugins" [
+    {
+      name = "tpm";
+      path = tpm;
+    }
+    {
+      name = "tmux-resurrect";
+      path = tmuxResurrect;
+    }
+    {
+      name = "tmux-continuum";
+      path = tmuxContinuum;
+    }
+    {
+      name = "tmux-sensible";
+      path = tmuxSensible;
+    }
+    {
+      name = "tmux-yank";
+      path = tmuxYank;
+    }
+    {
+      name = "tmux-prefix-highlight";
+      path = tmuxPrefixHighlight;
+    }
+    {
+      name = "tmux-which-key";
+      path = tmuxWhichKey;
+    }
+    {
+      name = "tmux-open";
+      path = tmuxOpen;
+    }
+    {
+      name = "tmux-sessionist";
+      path = tmuxSessionist;
+    }
+    {
+      name = "tmux-cowboy";
+      path = tmuxCowboy;
+    }
+    {
+      name = "tmux-logging";
+      path = tmuxLogging;
+    }
+    {
+      name = "tmux-copycat";
+      path = tmuxCopycat;
+    }
+  ];
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # Helper Scripts
+  # ══════════════════════════════════════════════════════════════════════════
+
+  # Workspace launcher with zoxide frecency ordering
+  workspaceLauncher = pkgs.writeShellScriptBin "tmux-workspace" ''
+    #!/usr/bin/env bash
+    # Tmux workspace launcher - select from ~/repos/workspaces
+    # Ordered by zoxide frecency score
+
+    WORKSPACES_DIR="$HOME/repos/workspaces"
+
+    if [ ! -d "$WORKSPACES_DIR" ]; then
+      echo "Workspaces directory not found: $WORKSPACES_DIR"
+      exit 1
+    fi
+
+    # Get all workspace directories (those with .git)
+    ALL_WORKSPACES=$(find "$WORKSPACES_DIR" -maxdepth 2 -type d -name ".git" 2>/dev/null | \
+      xargs -I{} dirname {} | sort)
+
+    # If zoxide is available, use it to order by frecency
+    if command -v zoxide >/dev/null 2>&1; then
+      ZOXIDE_LIST=$(zoxide query -l -s 2>/dev/null | grep "$WORKSPACES_DIR" || true)
+
+      ORDERED_WORKSPACES=""
+
+      while IFS= read -r line; do
+        WS_PATH=$(echo "$line" | awk '{print $2}')
+        if [ -n "$WS_PATH" ] && [ -d "$WS_PATH/.git" ]; then
+          SCORE=$(echo "$line" | awk '{printf "%.0f", $1}')
+          ORDERED_WORKSPACES="$ORDERED_WORKSPACES$WS_PATH [$SCORE]"$'\n'
+        fi
+      done <<< "$ZOXIDE_LIST"
+
+      while IFS= read -r ws; do
+        if [ -n "$ws" ] && ! echo "$ORDERED_WORKSPACES" | grep -q "^$ws "; then
+          ORDERED_WORKSPACES="$ORDERED_WORKSPACES$ws [0]"$'\n'
+        fi
+      done <<< "$ALL_WORKSPACES"
+
+      DISPLAY_LIST=$(echo "$ORDERED_WORKSPACES" | grep -v '^$')
+    else
+      DISPLAY_LIST=$(echo "$ALL_WORKSPACES" | sed 's/$/ [?]/')
+    fi
+
+    # Let user choose with fzf
+    if command -v fzf >/dev/null 2>&1; then
+      SELECTION=$(echo "$DISPLAY_LIST" | \
+        fzf --height 100% --reverse \
+            --prompt " Workspace: " \
+            --header "Select a workspace (sorted by usage)" \
+            --with-nth 1 \
+            --delimiter ' \[')
+      WORKSPACE=$(echo "$SELECTION" | sed 's/ \[.*$//')
+    else
+      echo "Available workspaces:"
+      echo "$DISPLAY_LIST" | nl
+      read -p "Enter number: " num
+      SELECTION=$(echo "$DISPLAY_LIST" | sed -n "''${num}p")
+      WORKSPACE=$(echo "$SELECTION" | sed 's/ \[.*$//')
+    fi
+
+    if [ -n "$WORKSPACE" ] && [ -d "$WORKSPACE" ]; then
+      WINDOW_NAME=$(basename "$WORKSPACE")
+      TMUX_BIN="$(command -v tmux)"
+
+      if command -v zoxide >/dev/null 2>&1; then
+        zoxide add "$WORKSPACE"
+      fi
+
+      # Create new window with two vertical panes
+      "$TMUX_BIN" new-window -n "$WINDOW_NAME" -c "$WORKSPACE" \; \
+        split-window -h -c "$WORKSPACE" \; \
+        select-pane -L
+    fi
+  '';
+
+  # tmuxp session loader
+  tmuxpLoader = pkgs.writeShellScriptBin "tmuxp-loader" ''
+    #!/usr/bin/env bash
+    # Load a tmuxp session from ~/.config/tmuxp/
+
+    TMUXP_DIR="$HOME/.config/tmuxp"
+
+    if [ ! -d "$TMUXP_DIR" ]; then
+      echo "No tmuxp configs found at $TMUXP_DIR"
+      exit 1
+    fi
+
+    CONFIGS=$(find "$TMUXP_DIR" -name "*.yaml" -o -name "*.yml" 2>/dev/null | sort)
+
+    if [ -z "$CONFIGS" ]; then
+      echo "No .yaml/.yml files found in $TMUXP_DIR"
+      exit 1
+    fi
+
+    if command -v fzf >/dev/null 2>&1; then
+      SELECTION=$(echo "$CONFIGS" | xargs -I{} basename {} | \
+        fzf --height 100% --reverse \
+            --prompt " tmuxp: " \
+            --header "Select a session to load")
+    else
+      echo "Available sessions:"
+      echo "$CONFIGS" | xargs -I{} basename {} | nl
+      read -p "Enter number: " num
+      SELECTION=$(echo "$CONFIGS" | xargs -I{} basename {} | sed -n "''${num}p")
+    fi
+
+    if [ -n "$SELECTION" ]; then
+      tmuxp load -y "$TMUXP_DIR/$SELECTION"
+    fi
+  '';
+
+  # tmuxp session saver
+  tmuxpExportScript = pkgs.writeShellScriptBin "tmux-save-layout" ''
+    #!/usr/bin/env bash
+    # Export current tmux session to tmuxp format
+
+    SESSION_NAME=$(tmux display-message -p '#S')
+    OUTPUT_DIR="$HOME/.config/tmuxp"
+    OUTPUT_FILE="$OUTPUT_DIR/$SESSION_NAME.yaml"
+
+    mkdir -p "$OUTPUT_DIR"
+
+    if command -v tmuxp >/dev/null 2>&1; then
+      tmuxp freeze -o "$OUTPUT_FILE" -y
+      tmux display-message "Session saved to $OUTPUT_FILE"
+    else
+      tmux display-message "tmuxp not found!"
+    fi
+  '';
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # Which-Key Init Generator
+  # ══════════════════════════════════════════════════════════════════════════
+
+  whichKeyConfig = ../tmux/which-key-config.yaml;
+
+  pythonWithYaml = pkgs.python3.withPackages (ps: [ ps.pyyaml ]);
+
+  whichKeyInit = pkgs.runCommand "which-key-init" { } ''
+    mkdir -p $out
+
+    # Copy build.py and patch the import
+    sed 's/from pyyaml.lib import yaml/import yaml/' \
+      ${pluginsDir}/tmux-which-key/plugin/build.py > build.py
+
+    ${pythonWithYaml}/bin/python3 build.py ${whichKeyConfig} $out/init.tmux
+  '';
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # Catppuccin Theme Colors
+  # ══════════════════════════════════════════════════════════════════════════
+
+  catppuccinColors = {
+    mocha = {
+      rosewater = "#f5e0dc";
+      flamingo = "#f2cdcd";
+      pink = "#f5c2e7";
+      mauve = "#cba6f7";
+      red = "#f38ba8";
+      maroon = "#eba0ac";
+      peach = "#fab387";
+      yellow = "#f9e2af";
+      green = "#a6e3a1";
+      teal = "#94e2d5";
+      sky = "#89dceb";
+      sapphire = "#74c7ec";
+      blue = "#89b4fa";
+      lavender = "#b4befe";
+      text = "#cdd6f4";
+      subtext1 = "#bac2de";
+      subtext0 = "#a6adc8";
+      overlay2 = "#9399b2";
+      overlay1 = "#7f849c";
+      overlay0 = "#6c7086";
+      surface2 = "#585b70";
+      surface1 = "#45475a";
+      surface0 = "#313244";
+      base = "#1e1e2e";
+      mantle = "#181825";
+      crust = "#11111b";
+    };
+    macchiato = {
+      base = "#24273a";
+      surface0 = "#363a4f";
+      blue = "#8aadf4";
+      green = "#a6da95";
+      peach = "#f5a97f";
+      text = "#cad3f5";
+    };
+    frappe = {
+      base = "#303446";
+      surface0 = "#414559";
+      blue = "#8caaee";
+      green = "#a6d189";
+      peach = "#ef9f76";
+      text = "#c6d0f5";
+    };
+    latte = {
+      base = "#eff1f5";
+      surface0 = "#ccd0da";
+      blue = "#1e66f5";
+      green = "#40a02b";
+      peach = "#fe640b";
+      text = "#4c4f69";
+    };
+  };
+
+  colors = catppuccinColors.${cfg.catppuccinFlavor};
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # Tmux Configuration
+  # ══════════════════════════════════════════════════════════════════════════
+
+  tmuxConf = pkgs.writeText "tmux.conf" ''
+    # ══════════════════════════════════════════════════════════════════════
+    # z-tmux Configuration
+    # Generated by home-manager z-tmux module
+    # ══════════════════════════════════════════════════════════════════════
+
+    # Use system shell
+    set -g default-shell $SHELL
+
+    # Core settings
+    set -g default-terminal "tmux-256color"
+    set -ag terminal-overrides ",xterm-256color:RGB"
+    set -as terminal-features ",xterm-256color:RGB"
+    set -g prefix ${cfg.prefix}
+    set -g mode-keys vi
+    set -g mouse on
+    set -g history-limit 50000
+    set -g base-index 1
+    setw -g pane-base-index 1
+    set -g escape-time 0
+    set -g focus-events on
+    set -g renumber-windows on
+    set -g allow-rename off
+    setw -g monitor-activity on
+    set -g visual-activity off
+
+    # ══════════════════════════════════════════════════════════════════════
+    # Status Bar - Catppuccin ${cfg.catppuccinFlavor}
+    # ══════════════════════════════════════════════════════════════════════
+
+    set -g status on
+    set -g status-position top
+    set -g status-interval 5
+    set -g status-style "bg=default"
+
+    # Mode indicator in left status
+    set -g @mode_indicator_prefix_mode_style "fg=${colors.base},bg=${colors.peach},bold"
+    set -g @mode_indicator_copy_mode_style "fg=${colors.base},bg=${colors.yellow},bold"
+    set -g @mode_indicator_sync_mode_style "fg=${colors.base},bg=${colors.red},bold"
+    set -g @mode_indicator_empty_mode_style "fg=${colors.base},bg=${colors.green},bold"
+
+    # Status left: session name with powerline
+    set -g status-left-length 50
+    set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
+
+    # Status right: directory
+    set -g status-right-length 100
+    set -g status-right "#[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold] 󰉋 #{=30:pane_current_path} "
+
+    # Window status
+    set -g window-status-format "#[fg=${colors.overlay0}] #I:#W "
+    set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
+    set -g window-status-separator " "
+
+    # Pane borders
+    set -g pane-border-style "fg=${colors.surface0}"
+    set -g pane-active-border-style "fg=${colors.blue}"
+
+    # ══════════════════════════════════════════════════════════════════════
+    # Key Bindings
+    # ══════════════════════════════════════════════════════════════════════
+
+    # Reload config (reload-config is a command alias defined by which-key)
+    bind r reload-config
+    bind | split-window -h -c "#{pane_current_path}"
+    bind - split-window -v -c "#{pane_current_path}"
+    bind c new-window -c "#{pane_current_path}"
+    bind , command-prompt -I "#W" "rename-window '%%'"
+    bind $ command-prompt -I "#S" "rename-session '%%'"
+
+    # Vim-style navigation
+    bind h select-pane -L
+    bind j select-pane -D
+    bind k select-pane -U
+    bind l select-pane -R
+    bind -r H resize-pane -L 5
+    bind -r J resize-pane -D 5
+    bind -r K resize-pane -U 5
+    bind -r L resize-pane -R 5
+
+    # Popup terminal
+    bind p display-popup -E -w 80% -h 80% -d "#{pane_current_path}"
+    bind s choose-tree -sZ
+    bind Enter copy-mode
+    bind S run-shell "${tmuxpExportScript}/bin/tmux-save-layout"
+
+    # Copy mode
+    bind -T copy-mode-vi v send -X begin-selection
+    bind -T copy-mode-vi y send -X copy-selection-and-cancel
+
+    # ══════════════════════════════════════════════════════════════════════
+    # Plugins
+    # ══════════════════════════════════════════════════════════════════════
+
+    # Plugin path
+    set-environment -g TMUX_PLUGIN_MANAGER_PATH "${pluginsDir}"
+
+    # Sensible defaults
+    run-shell ${pluginsDir}/tmux-sensible/sensible.tmux
+
+    # Yank (clipboard)
+    run-shell ${pluginsDir}/tmux-yank/yank.tmux
+
+    # Resurrect (session persistence)
+    set -g @resurrect-dir '~/.tmux/resurrect'
+    set -g @resurrect-capture-pane-contents 'on'
+    # Disable process restoration strategies to avoid Nix path issues
+    set -g @resurrect-strategy-ssh 'off'
+    set -g @resurrect-strategy-mosh 'off'
+    # Manual save/restore keybindings
+    bind C-s run-shell "${pluginsDir}/tmux-resurrect/scripts/save.sh" \; display "Session saved"
+    bind C-r run-shell "${pluginsDir}/tmux-resurrect/scripts/restore.sh" \; display "Session restored"
+    run-shell ${pluginsDir}/tmux-resurrect/resurrect.tmux
+
+    # Continuum (auto-save)
+    set -g @continuum-save-interval '${toString cfg.saveInterval}'
+    set -g @continuum-restore 'off'
+    run-shell ${pluginsDir}/tmux-continuum/continuum.tmux
+
+    # High value plugins
+    run-shell ${pluginsDir}/tmux-open/open.tmux
+    run-shell ${pluginsDir}/tmux-sessionist/sessionist.tmux
+
+    # Optional plugins
+    run-shell ${pluginsDir}/tmux-cowboy/cowboy.tmux
+    set -g @logging-path "$HOME/.tmux/logs"
+    run-shell ${pluginsDir}/tmux-logging/logging.tmux
+    run-shell ${pluginsDir}/tmux-copycat/copycat.tmux
+
+    # Which-key (must load after other plugins for keybind discovery)
+    set -g @tmux-which-key-xdg-enable 1
+    set -g @tmux-which-key-disable-autobuild 1
+    run-shell ${pluginsDir}/tmux-which-key/plugin.sh.tmux
+
+    # ══════════════════════════════════════════════════════════════════════
+    # Extra Configuration
+    # ══════════════════════════════════════════════════════════════════════
+
+    ${cfg.extraConfig}
+  '';
+
 in
 {
+  # ══════════════════════════════════════════════════════════════════════════
+  # Module Options
+  # ══════════════════════════════════════════════════════════════════════════
+
   options.z-tmux = {
     enable = lib.mkEnableOption "z-tmux configuration";
 
     prefix = lib.mkOption {
       type = lib.types.str;
-      default = "C-a";
+      default = "C-b";
       description = "Tmux prefix key";
-    };
-
-    shell = lib.mkOption {
-      type = lib.types.str;
-      default = "${pkgs.zsh}/bin/zsh";
-      description = "Default shell for tmux";
     };
 
     catppuccinFlavor = lib.mkOption {
@@ -54,7 +540,7 @@ in
     saveInterval = lib.mkOption {
       type = lib.types.int;
       default = 15;
-      description = "Continuum save interval in minutes";
+      description = "Continuum auto-save interval in minutes";
     };
 
     enableMosh = lib.mkOption {
@@ -72,220 +558,41 @@ in
     extraConfig = lib.mkOption {
       type = lib.types.lines;
       default = "";
-      description = "Extra tmux configuration";
+      description = "Extra tmux configuration appended to the config file";
     };
   };
 
+  # ══════════════════════════════════════════════════════════════════════════
+  # Module Configuration
+  # ══════════════════════════════════════════════════════════════════════════
+
   config = lib.mkIf cfg.enable {
     # Install packages
-    home.packages =
-      with pkgs;
-      [
-        tmux
-        gitmux # Git status in tmux
-      ]
-      ++ lib.optional cfg.enableMosh mosh
-      ++ lib.optional cfg.enableTmuxp tmuxp;
+    home.packages = [
+      workspaceLauncher
+      tmuxpLoader
+      tmuxpExportScript
+    ]
+    ++ lib.optional cfg.enableMosh pkgs.mosh
+    ++ lib.optional cfg.enableTmuxp pkgs.tmuxp;
 
-    # Create TPM directory structure
-    home.file.".tmux/plugins/tpm".source = tpm;
-    home.file.".tmux/plugins/tmux-which-key".source = tmuxWhichKey;
-
-    # Create resurrect directory
+    # Create required directories
     home.file.".tmux/resurrect/.keep".text = "";
+    home.file.".tmux/logs/.keep".text = "";
 
-    # tmuxp sessions directory
-    xdg.configFile."tmuxp/remote-dev.yaml".text = builtins.readFile ../tmux/sessions/remote-dev.yaml;
+    # Main tmux configuration (symlink to ~/.tmux.conf for reload-config)
+    home.file.".tmux.conf".source = tmuxConf;
 
-    # which-key configuration
-    xdg.configFile."tmux/plugins/tmux-which-key/config.yaml".text =
-      builtins.readFile ../tmux/which-key.yaml;
+    # Which-key XDG config (config.yaml for reference)
+    xdg.configFile."tmux/plugins/tmux-which-key/config.yaml".source = whichKeyConfig;
 
-    # Main tmux configuration
-    programs.tmux = {
-      enable = true;
-      terminal = "tmux-256color";
-      shell = cfg.shell;
-      prefix = cfg.prefix;
-      keyMode = "vi";
-      mouse = true;
-      historyLimit = 50000;
-      baseIndex = 1;
-      escapeTime = 0;
-      clock24 = true;
+    # Which-key XDG data (pre-generated init.tmux)
+    xdg.dataFile."tmux/plugins/tmux-which-key/init.tmux".source = "${whichKeyInit}/init.tmux";
 
-      plugins = with pkgs.tmuxPlugins; [
-        {
-          plugin = catppuccin;
-          extraConfig = ''
-            # Catppuccin configuration
-            set -g @catppuccin_flavor "${cfg.catppuccinFlavor}"
-            set -g @catppuccin_status_background "default"
+    # tmuxp session configs
+    xdg.configFile."tmuxp/.keep".text = "";
 
-            # Window styling
-            set -g @catppuccin_window_status_style "rounded"
-            set -g @catppuccin_window_number_position "right"
-            set -g @catppuccin_window_default_fill "number"
-            set -g @catppuccin_window_default_text "#W"
-            set -g @catppuccin_window_current_fill "number"
-            set -g @catppuccin_window_current_text "#W"
-
-            # Status bar position
-            set -g status-position top
-            set -g status-interval 5
-
-            # Status modules
-            set -g @catppuccin_status_left_separator ""
-            set -g @catppuccin_status_right_separator ""
-            set -g @catppuccin_status_connect_separator "no"
-
-            set -g status-left "#{E:@catppuccin_status_session}"
-            set -g status-right "#{E:@catppuccin_status_directory}"
-          '';
-        }
-        {
-          plugin = resurrect;
-          extraConfig = ''
-            set -g @resurrect-dir '~/.tmux/resurrect'
-            set -g @resurrect-capture-pane-contents 'on'
-            set -g @resurrect-strategy-nvim 'session'
-
-            # Disable SSH/Mosh replay to prevent broken remote sessions
-            set -g @resurrect-processes 'false'
-          '';
-        }
-        {
-          plugin = continuum;
-          extraConfig = ''
-            set -g @continuum-save-interval '${toString cfg.saveInterval}'
-            set -g @continuum-restore 'on'
-          '';
-        }
-        prefix-highlight
-        yank
-        sensible
-      ];
-
-      extraConfig = ''
-        # ══════════════════════════════════════════════════════════════════════
-        # Core Settings
-        # ══════════════════════════════════════════════════════════════════════
-
-        # True color support
-        set -ag terminal-overrides ",xterm-256color:RGB"
-        set -as terminal-features ",xterm-256color:RGB"
-
-        # Focus events for vim
-        set -g focus-events on
-
-        # Pane numbering starts at 1
-        setw -g pane-base-index 1
-
-        # Renumber windows when one is closed
-        set -g renumber-windows on
-
-        # Don't rename windows automatically
-        set -g allow-rename off
-
-        # Activity monitoring
-        setw -g monitor-activity on
-        set -g visual-activity off
-
-        # ══════════════════════════════════════════════════════════════════════
-        # Key Bindings
-        # ══════════════════════════════════════════════════════════════════════
-
-        # Reload config
-        bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded!"
-
-        # Split panes with | and -
-        bind | split-window -h -c "#{pane_current_path}"
-        bind - split-window -v -c "#{pane_current_path}"
-        bind '"' split-window -v -c "#{pane_current_path}"
-        bind % split-window -h -c "#{pane_current_path}"
-
-        # New window in current path
-        bind c new-window -c "#{pane_current_path}"
-
-        # Vim-style pane navigation
-        bind h select-pane -L
-        bind j select-pane -D
-        bind k select-pane -U
-        bind l select-pane -R
-
-        # Vim-style pane resizing
-        bind -r H resize-pane -L 5
-        bind -r J resize-pane -D 5
-        bind -r K resize-pane -U 5
-        bind -r L resize-pane -R 5
-
-        # Alt + arrow for pane navigation (no prefix)
-        bind -n M-Left select-pane -L
-        bind -n M-Right select-pane -R
-        bind -n M-Up select-pane -U
-        bind -n M-Down select-pane -D
-
-        # Shift + arrow to switch windows (no prefix)
-        bind -n S-Left previous-window
-        bind -n S-Right next-window
-
-        # Quick window selection
-        bind -r C-h select-window -t :-
-        bind -r C-l select-window -t :+
-
-        # Popup terminal
-        bind p display-popup -E -w 80% -h 80% -d "#{pane_current_path}"
-
-        # Synchronize panes toggle
-        bind S setw synchronize-panes
-
-        # Toggle status bar
-        bind b set -g status
-
-        # Clear history
-        bind C-k clear-history
-
-        # ══════════════════════════════════════════════════════════════════════
-        # Copy Mode (Vi-style)
-        # ══════════════════════════════════════════════════════════════════════
-
-        bind Enter copy-mode
-        bind -T copy-mode-vi v send -X begin-selection
-        bind -T copy-mode-vi y send -X copy-selection-and-cancel
-        bind -T copy-mode-vi Escape send -X cancel
-
-        # Mouse selection copies to clipboard
-        bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-selection-and-cancel
-
-        # ══════════════════════════════════════════════════════════════════════
-        # Session Management
-        # ══════════════════════════════════════════════════════════════════════
-
-        # Session switcher
-        bind s choose-tree -sZ
-
-        # Kill session
-        bind X confirm-before -p "Kill session #S? (y/n)" kill-session
-
-        # ══════════════════════════════════════════════════════════════════════
-        # Which-Key Integration
-        # ══════════════════════════════════════════════════════════════════════
-
-        # Load which-key plugin
-        run-shell ~/.tmux/plugins/tmux-which-key/plugin.sh.tmux
-
-        # ══════════════════════════════════════════════════════════════════════
-        # TPM (must be last)
-        # ══════════════════════════════════════════════════════════════════════
-
-        run '~/.tmux/plugins/tpm/tpm'
-
-        # ══════════════════════════════════════════════════════════════════════
-        # Extra Configuration
-        # ══════════════════════════════════════════════════════════════════════
-
-        ${cfg.extraConfig}
-      '';
-    };
+    # NOTE: We don't use programs.tmux because we need full control over plugin loading
+    # and the Nix store paths. The config is managed via home.file instead.
   };
 }

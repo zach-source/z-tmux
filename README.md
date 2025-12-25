@@ -2,18 +2,27 @@
 
 Reproducible tmux setup with Nix, featuring:
 
-- **Catppuccin Mocha** powerline top bar
-- **tmux-which-key** for discoverability
+- **Catppuccin** theme (latte/frappe/macchiato/mocha)
+- **tmux-which-key** for discoverability (`prefix + Space`)
 - **tmux-resurrect + continuum** for session persistence
 - **tmuxp** for declarative session management
-- **mosh** for network-resilient remote connections
+- **Workspace launcher** with zoxide integration
+- **Plugin suite**: copycat, open, sessionist, cowboy, logging
 
 ## Quick Start
 
-### Using the Dev Shell
+### Try It Out
 
 ```bash
-nix develop
+nix run github:ztaylor/z-tmux
+```
+
+Or clone and run locally:
+
+```bash
+git clone https://github.com/ztaylor/z-tmux
+cd z-tmux
+nix run .#test
 ```
 
 ### As a Home Manager Module
@@ -35,79 +44,160 @@ Import and enable in your home configuration:
 {
   imports = [ inputs.z-tmux.homeManagerModules.default ];
 
-  z-tmux.enable = true;
+  z-tmux = {
+    enable = true;
+    catppuccinFlavor = "mocha";  # or: latte, frappe, macchiato
+    # prefix = "C-a";            # default: C-b
+    # saveInterval = 10;         # default: 15 minutes
+  };
 }
 ```
-
-### Standalone (without Nix)
-
-1. Install TPM:
-   ```bash
-   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-   ```
-
-2. Copy the config:
-   ```bash
-   cp tmux/tmux.conf ~/.tmux.conf
-   ```
-
-3. Install plugins: `prefix + I`
 
 ## Module Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `z-tmux.enable` | bool | false | Enable z-tmux configuration |
-| `z-tmux.prefix` | string | "C-a" | Tmux prefix key |
-| `z-tmux.shell` | string | zsh | Default shell |
-| `z-tmux.catppuccinFlavor` | enum | "mocha" | Catppuccin flavor (latte/frappe/macchiato/mocha) |
-| `z-tmux.saveInterval` | int | 15 | Continuum save interval (minutes) |
-| `z-tmux.enableMosh` | bool | true | Install mosh |
-| `z-tmux.enableTmuxp` | bool | true | Install tmuxp |
-| `z-tmux.extraConfig` | lines | "" | Extra tmux configuration |
+| `z-tmux.enable` | bool | `false` | Enable z-tmux configuration |
+| `z-tmux.prefix` | string | `"C-b"` | Tmux prefix key |
+| `z-tmux.catppuccinFlavor` | enum | `"mocha"` | Theme: latte/frappe/macchiato/mocha |
+| `z-tmux.saveInterval` | int | `15` | Continuum save interval (minutes) |
+| `z-tmux.enableMosh` | bool | `true` | Install mosh for remote connections |
+| `z-tmux.enableTmuxp` | bool | `true` | Install tmuxp for session management |
+| `z-tmux.extraConfig` | lines | `""` | Extra tmux configuration lines |
 
-## Key Bindings
+## Which-Key Menu
+
+Press `prefix + Space` to open the which-key menu. Menus are organized by category:
+
+| Key | Menu | Description |
+|-----|------|-------------|
+| `W` | Workspace | Launch workspace picker (zoxide-sorted) |
+| `y` | +Copy | Copy mode, buffers, paste |
+| `/` | +Search | Copycat regex search, URLs, files, IPs |
+| `w` | +Windows | Window management, layouts, splits |
+| `p` | +Panes | Pane navigation, resize, zoom |
+| `s` | +Sessions | Session management, tmuxp, sessionist |
+| `S` | +System | Reload config, logging, client management |
+| `?` | Keys | List all key bindings |
+| `R` | Reload | Reload tmux configuration |
+
+### Submenus
+
+**+Search** (copycat integration):
+- `/` Regex search
+- `f` Find files
+- `u` Find URLs
+- `g` Git files (status output)
+- `d` Digits
+- `h` Hashes (git, etc)
+- `i` IP addresses
+
+**+Panes**:
+- `hjkl` Navigate panes
+- `r` Resize submenu (transient, repeatable)
+- `z` Zoom toggle
+- `*` Kill process (cowboy)
+- `R` Respawn pane
+
+**+Sessions**:
+- `t` Load tmuxp session
+- `S` Save current as tmuxp
+- `g` Sessionist submenu (switch, create, promote pane)
+
+## Direct Key Bindings
 
 | Binding | Action |
 |---------|--------|
-| `C-a` | Prefix key |
-| `prefix + ?` | Which-key help menu |
+| `prefix + Space` | Open which-key menu |
 | `prefix + \|` | Split horizontal |
 | `prefix + -` | Split vertical |
-| `prefix + h/j/k/l` | Navigate panes (vim-style) |
+| `prefix + c` | New window |
+| `prefix + h/j/k/l` | Navigate panes |
 | `prefix + H/J/K/L` | Resize panes |
 | `prefix + p` | Popup terminal |
 | `prefix + s` | Session chooser |
 | `prefix + r` | Reload config |
+| `prefix + Enter` | Enter copy mode |
+| `prefix + S` | Save layout as tmuxp |
 | `prefix + C-s` | Save session (resurrect) |
 | `prefix + C-r` | Restore session (resurrect) |
-| `Alt + arrows` | Navigate panes (no prefix) |
-| `Shift + arrows` | Switch windows (no prefix) |
+
+## Workspace Launcher
+
+Press `prefix + Space`, then `W` to open the workspace launcher.
+
+Features:
+- Scans `~/repos/workspaces` for git repositories
+- Sorted by zoxide frecency score
+- Opens new window with two vertical panes
+- Automatically adds to zoxide history
+
+## Plugins Included
+
+| Plugin | Purpose |
+|--------|---------|
+| tmux-sensible | Sensible defaults |
+| tmux-yank | System clipboard integration |
+| tmux-resurrect | Session save/restore |
+| tmux-continuum | Automatic session saving |
+| tmux-which-key | Discoverable key bindings |
+| tmux-open | Open URLs/files from copy mode |
+| tmux-copycat | Regex search in scrollback |
+| tmux-sessionist | Session management utilities |
+| tmux-cowboy | Kill unresponsive processes |
+| tmux-logging | Pane logging and capture |
+| tmux-prefix-highlight | Show prefix state in status |
 
 ## tmuxp Sessions
 
-Load a session:
-
+Load a saved session:
 ```bash
-tmuxp load remote-dev
+tmuxp load session-name
 ```
+
+Or via which-key: `prefix + Space`, `s`, `t`
+
+Save current session: `prefix + Space`, `s`, `S`
 
 Sessions are stored in `~/.config/tmuxp/`.
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                       z-tmux                             │
-├──────────────────────────────────────────────────────────┤
-│  tmux         - Multiplexing, panes, windows             │
-│  tmuxp        - Declarative session/layout creation      │
-│  mosh         - Network-resilient remote transport       │
-│  resurrect    - Manual session save/restore              │
-│  continuum    - Automatic periodic saves + restore       │
-│  TPM          - Plugin management                        │
-│  Nix          - Reproducible installation                │
-└──────────────────────────────────────────────────────────┘
+z-tmux (Nix Flake)
+├── modules/tmux.nix     # Home-manager module
+├── tmux/
+│   ├── which-key-config.yaml   # Menu configuration
+│   └── sessions/               # Example tmuxp sessions
+└── flake.nix            # Flake with module + test package
+
+Plugins (bundled via Nix):
+├── tpm                  # Plugin manager (for reference)
+├── tmux-sensible        # Defaults
+├── tmux-yank            # Clipboard
+├── tmux-resurrect       # Session persistence
+├── tmux-continuum       # Auto-save
+├── tmux-which-key       # Menu system
+├── tmux-open            # Open URLs/files
+├── tmux-copycat         # Regex search
+├── tmux-sessionist      # Session utils
+├── tmux-cowboy          # Process killer
+├── tmux-logging         # Pane logging
+└── tmux-prefix-highlight
+```
+
+## Development
+
+```bash
+# Enter dev shell
+nix develop
+
+# Build and run test package
+nix build .#test
+./result/bin/z-tmux-test
+
+# Evaluate home-manager config
+nix eval .#homeConfigurations.aarch64-darwin.z-tmux
 ```
 
 ## License

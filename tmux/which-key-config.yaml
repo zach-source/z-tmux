@@ -1,0 +1,355 @@
+# z-tmux which-key configuration
+# Matches dotfiles/nix style with resize, sessions, and workspace launcher
+
+command_alias_start_index: 200
+
+keybindings:
+  prefix_table: Space
+
+title:
+  style: "align=centre,bold"
+  prefix: " z-tmux "
+  prefix_style: "fg=#1e1e2e,bg=#a6e3a1,bold"
+
+position:
+  x: R
+  y: S
+
+custom_variables:
+  - name: log_info
+    value: "#[fg=#a6e3a1,italics] ✓#[default]"
+  - name: log_warn
+    value: "#[fg=#fab387,italics] ⚠#[default]"
+
+macros:
+  - name: reload-config
+    commands:
+      - display "#{log_info} Reloading..."
+      - source-file ~/.tmux.conf
+      - display "#{log_info} Config reloaded!"
+  - name: restart-pane
+    commands:
+      - display "#{log_info} Respawning pane..."
+      - respawn-pane -k -c "#{pane_current_path}"
+  - name: workspace-launcher
+    commands:
+      - display-popup -E -w 80% -h 60% "tmux-workspace"
+
+items:
+  # Quick actions
+  - name: Run
+    key: ":"
+    command: command-prompt
+  - name: Last window
+    key: Tab
+    command: last-window
+  - name: Last pane
+    key: "`"
+    command: last-pane
+  - separator: true
+
+  # Workspace launcher
+  - name: " Workspace"
+    key: W
+    macro: workspace-launcher
+
+  # Copy submenu
+  - name: "+Copy"
+    key: "y"
+    menu:
+      - name: Enter copy mode
+        key: "y"
+        command: copy-mode
+      - name: List buffers
+        key: l
+        command: list-buffers
+      - name: Paste buffer
+        key: p
+        command: paste-buffer
+      - name: Choose buffer
+        key: b
+        command: choose-buffer -Z
+      - separator: true
+      - name: "󰏪 In copy: o=open, C-o=editor"
+        key: "?"
+        command: 'display-message "In copy mode: o opens file/URL, Ctrl-o opens in editor"'
+
+  # Search submenu (copycat)
+  - name: "+Search"
+    key: "/"
+    menu:
+      - name: "Regex search"
+        key: "/"
+        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_search.sh"
+      - name: "󰈔 Files"
+        key: f
+        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_file_search.sh"
+      - name: " URLs"
+        key: u
+        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_url_search.sh"
+      - name: "󰊕 Git files"
+        key: g
+        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_git_special.sh"
+      - name: " Digits"
+        key: d
+        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_digit_search.sh"
+      - name: " Hashes"
+        key: h
+        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_hash_search.sh"
+      - name: "󰇥 IP addresses"
+        key: i
+        command: run-shell "~/.tmux/plugins/tmux-copycat/scripts/copycat_ip_search.sh"
+
+  # Windows submenu
+  - name: "+Windows"
+    key: w
+    menu:
+      - name: Last
+        key: Tab
+        command: last-window
+      - name: Choose
+        key: w
+        command: choose-tree -Zw
+      - name: Previous
+        key: p
+        command: previous-window
+      - name: Next
+        key: n
+        command: next-window
+      - separator: true
+      - name: New
+        key: c
+        command: new-window -c "#{pane_current_path}"
+      - name: "+Layout"
+        key: l
+        menu:
+          - name: Next
+            key: l
+            command: next-layout
+            transient: true
+          - name: Previous
+            key: L
+            command: previous-layout
+            transient: true
+          - separator: true
+          - name: Tiled
+            key: t
+            command: select-layout tiled
+          - name: Horizontal
+            key: h
+            command: select-layout even-horizontal
+          - name: Vertical
+            key: v
+            command: select-layout even-vertical
+          - name: Main horizontal
+            key: H
+            command: select-layout main-horizontal
+          - name: Main vertical
+            key: V
+            command: select-layout main-vertical
+      - name: "Split │"
+        key: "|"
+        command: split-window -h -c "#{pane_current_path}"
+      - name: "Split ─"
+        key: "-"
+        command: split-window -v -c "#{pane_current_path}"
+      - separator: true
+      - name: Rotate
+        key: o
+        command: rotate-window
+      - name: Rename
+        key: r
+        command: command-prompt -I "#W" "rename-window '%%'"
+      - name: Kill
+        key: X
+        command: confirm -p "Kill window #W? (y/n)" kill-window
+
+  # Panes submenu with resize
+  - name: "+Panes"
+    key: p
+    menu:
+      - name: Last
+        key: Tab
+        command: last-pane
+      - name: Choose
+        key: p
+        command: display-panes -d 0
+      - separator: true
+      - name: "←"
+        key: h
+        command: select-pane -L
+      - name: "↓"
+        key: j
+        command: select-pane -D
+      - name: "↑"
+        key: k
+        command: select-pane -U
+      - name: "→"
+        key: l
+        command: select-pane -R
+      - separator: true
+      - name: Zoom
+        key: z
+        command: resize-pane -Z
+      - name: "+Resize"
+        key: r
+        menu:
+          - name: "←"
+            key: h
+            command: resize-pane -L 2
+            transient: true
+          - name: "↓"
+            key: j
+            command: resize-pane -D 2
+            transient: true
+          - name: "↑"
+            key: k
+            command: resize-pane -U 2
+            transient: true
+          - name: "→"
+            key: l
+            command: resize-pane -R 2
+            transient: true
+          - separator: true
+          - name: "←← (10)"
+            key: H
+            command: resize-pane -L 10
+            transient: true
+          - name: "↓↓ (10)"
+            key: J
+            command: resize-pane -D 10
+            transient: true
+          - name: "↑↑ (10)"
+            key: K
+            command: resize-pane -U 10
+            transient: true
+          - name: "→→ (10)"
+            key: L
+            command: resize-pane -R 10
+            transient: true
+          - separator: true
+          - name: Balance
+            key: "="
+            command: select-layout tiled
+      - separator: true
+      - name: Break
+        key: "!"
+        command: break-pane
+      - name: Respawn
+        key: R
+        macro: restart-pane
+      - name: "󰚌 Kill process"
+        key: "*"
+        command: run-shell "~/.tmux/plugins/tmux-cowboy/scripts/kill_process.sh"
+      - name: Kill pane
+        key: X
+        command: confirm -p "Kill pane #P? (y/n)" kill-pane
+
+  # Sessions submenu with tmuxp
+  - name: "+Sessions"
+    key: s
+    menu:
+      - name: Choose
+        key: s
+        command: choose-tree -Zs
+      - name: Last
+        key: Tab
+        command: switch-client -l
+      - name: Previous
+        key: p
+        command: switch-client -p
+      - name: Next
+        key: n
+        command: switch-client -n
+      - separator: true
+      - name: New
+        key: N
+        command: command-prompt -p "Session name:" "new-session -s '%%'"
+      - name: Rename
+        key: r
+        command: command-prompt -I "#S" "rename-session '%%'"
+      - separator: true
+      - name: " tmuxp load"
+        key: t
+        command: display-popup -E -w 60% -h 40% "tmuxp-loader"
+      - name: " Save as tmuxp"
+        key: S
+        command: run-shell "tmux-save-layout"
+      - separator: true
+      - name: "󰑐 Sessionist"
+        key: g
+        menu:
+          - name: Switch last
+            key: g
+            command: switch-client -l
+          - name: Switch (fzf)
+            key: s
+            command: run-shell "~/.tmux/plugins/tmux-sessionist/scripts/goto_session.sh"
+          - name: Create
+            key: C
+            command: run-shell "~/.tmux/plugins/tmux-sessionist/scripts/new_session_prompt.sh"
+          - name: Kill other
+            key: X
+            command: run-shell "~/.tmux/plugins/tmux-sessionist/scripts/kill_session_prompt.sh"
+          - separator: true
+          - name: Promote pane
+            key: "@"
+            command: run-shell "~/.tmux/plugins/tmux-sessionist/scripts/promote_pane.sh"
+          - name: Join pane here
+            key: "t"
+            command: choose-tree -Zw "join-pane -s '%%'"
+      - separator: true
+      - name: Detach
+        key: d
+        command: detach-client
+      - name: Kill
+        key: X
+        command: confirm -p "Kill session #S? (y/n)" kill-session
+
+  # System submenu
+  - name: "+System"
+    key: S
+    menu:
+      - name: Choose client
+        key: c
+        command: choose-client -Z
+      - name: Refresh
+        key: R
+        command: refresh-client
+      - separator: true
+      - name: Reload config
+        key: r
+        macro: reload-config
+      - separator: true
+      - name: "+Logging"
+        key: l
+        menu:
+          - name: Toggle pane log
+            key: P
+            command: run-shell "~/.tmux/plugins/tmux-logging/scripts/toggle_logging.sh"
+          - name: Save history
+            key: h
+            command: run-shell "~/.tmux/plugins/tmux-logging/scripts/save_complete_history.sh"
+          - name: Screenshot (text)
+            key: s
+            command: run-shell "~/.tmux/plugins/tmux-logging/scripts/screen_capture.sh"
+          - separator: true
+          - name: Clear history
+            key: c
+            command: run-shell "~/.tmux/plugins/tmux-logging/scripts/clear_history.sh"
+      - separator: true
+      - name: Detach
+        key: d
+        command: detach-client
+
+  - separator: true
+  - name: "󰌌 Keys"
+    key: "?"
+    command: list-keys -N
+  - name: " Clock"
+    key: t
+    command: clock-mode
+  - separator: true
+  - name: " Reload"
+    key: R
+    macro: reload-config
