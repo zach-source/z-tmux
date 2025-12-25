@@ -74,8 +74,8 @@
               self.homeManagerModules.z-tmux
               {
                 home = {
-                  username = "ztaylor";
-                  homeDirectory = if pkgs.stdenv.isDarwin then "/Users/ztaylor" else "/home/ztaylor";
+                  username = "user";
+                  homeDirectory = if pkgs.stdenv.isDarwin then "/Users/user" else "/home/user";
                   stateVersion = "24.11";
                 };
 
@@ -237,7 +237,8 @@
           # Helper scripts
           workspaceLauncher = pkgs.writeShellScriptBin "tmux-workspace" ''
             #!/usr/bin/env bash
-            WORKSPACES_DIR="$HOME/repos/workspaces"
+            # Configure via z-tmux.workspacesDir in home-manager module
+            WORKSPACES_DIR="''${WORKSPACES_DIR:-$HOME/repos/workspaces}"
 
             if [ ! -d "$WORKSPACES_DIR" ]; then
               echo "Workspaces directory not found: $WORKSPACES_DIR"

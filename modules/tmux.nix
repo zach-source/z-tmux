@@ -163,10 +163,10 @@ let
   # Workspace launcher with zoxide frecency ordering
   workspaceLauncher = pkgs.writeShellScriptBin "tmux-workspace" ''
     #!/usr/bin/env bash
-    # Tmux workspace launcher - select from ~/repos/workspaces
+    # Tmux workspace launcher - select from configured workspaces directory
     # Ordered by zoxide frecency score
 
-    WORKSPACES_DIR="$HOME/repos/workspaces"
+    WORKSPACES_DIR="${cfg.workspacesDir}"
 
     if [ ! -d "$WORKSPACES_DIR" ]; then
       echo "Workspaces directory not found: $WORKSPACES_DIR"
@@ -628,6 +628,12 @@ in
       type = lib.types.lines;
       default = "";
       description = "Extra tmux configuration appended to the config file";
+    };
+
+    workspacesDir = lib.mkOption {
+      type = lib.types.str;
+      default = "$HOME/repos/workspaces";
+      description = "Directory containing workspace repositories for the launcher";
     };
 
     # ════════════════════════════════════════════════════════════════════════

@@ -14,13 +14,13 @@ Reproducible tmux setup with Nix, featuring:
 ### Try It Out
 
 ```bash
-nix run github:ztaylor/z-tmux
+nix run github:zach-source/z-tmux
 ```
 
 Or clone and run locally:
 
 ```bash
-git clone https://github.com/ztaylor/z-tmux
+git clone https://github.com/zach-source/z-tmux
 cd z-tmux
 nix run .#test
 ```
@@ -32,7 +32,7 @@ Add to your flake inputs:
 ```nix
 {
   inputs = {
-    z-tmux.url = "github:ztaylor/z-tmux";
+    z-tmux.url = "github:zach-source/z-tmux";
   };
 }
 ```
@@ -67,6 +67,7 @@ Import and enable in your home configuration:
 | `z-tmux.enableMosh` | bool | `true` | Install mosh for remote connections |
 | `z-tmux.enableTmuxp` | bool | `true` | Install tmuxp for session management |
 | `z-tmux.extraConfig` | lines | `""` | Extra tmux configuration lines |
+| `z-tmux.workspacesDir` | string | `"$HOME/repos/workspaces"` | Directory for workspace launcher |
 
 ### Plugin Options
 
