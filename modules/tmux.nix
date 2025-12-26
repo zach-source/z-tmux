@@ -771,6 +771,14 @@ in
     # tmuxp session configs
     xdg.configFile."tmuxp/.keep" = lib.mkIf cfg.enableTmuxp { text = ""; };
 
+    # Remove existing .tmux.conf before home-manager creates symlink
+    # This prevents "file in the way" errors when switching from manual config
+    home.activation.cleanTmuxConf = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+      if [ -f "$HOME/.tmux.conf" ] && [ ! -L "$HOME/.tmux.conf" ]; then
+        $DRY_RUN_CMD rm -f "$HOME/.tmux.conf"
+      fi
+    '';
+
     # NOTE: We don't use programs.tmux because we need full control over plugin loading
     # and the Nix store paths. The config is managed via home.file instead.
   };
