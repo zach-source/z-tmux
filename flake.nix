@@ -526,10 +526,9 @@
             run-shell ${plugins.logging}/share/tmux-plugins/logging/logging.tmux
             run-shell ${plugins.copycat}/share/tmux-plugins/copycat/copycat.tmux
 
-            # Which-key (using traditional ~/.tmux/ paths)
-            set -g @tmux-which-key-xdg-enable 0
-            set -g @tmux-which-key-disable-autobuild 1
-            run-shell ${plugins.which-key}/share/tmux-plugins/tmux-which-key/plugin.sh.tmux
+            # Which-key (source our pre-built init.tmux directly)
+            # We don't use plugin.sh.tmux because it looks for init.tmux in the Nix store
+            source-file ~/.tmux/plugins/tmux-which-key/init.tmux
 
             # Auto-start Claude monitor (singleton - safe to call on every reload)
             run-shell -b '${claudeMonitorScript}/bin/tmux-claude-monitor &'

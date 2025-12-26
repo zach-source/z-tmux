@@ -588,10 +588,9 @@ let
     ''}
 
     ${lib.optionalString cfg.plugins.whichKey ''
-      # Which-key (using traditional ~/.tmux/ paths)
-      set -g @tmux-which-key-xdg-enable 0
-      set -g @tmux-which-key-disable-autobuild 1
-      run-shell ${plugins.which-key}/share/tmux-plugins/tmux-which-key/plugin.sh.tmux
+      # Which-key (source our pre-built init.tmux directly)
+      # We don't use plugin.sh.tmux because it looks for init.tmux in the Nix store
+      source-file ~/.tmux/plugins/tmux-which-key/init.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.claudeMonitor ''
