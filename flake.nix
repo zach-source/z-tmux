@@ -423,6 +423,9 @@
 
             # Fix: use global environment instead of session-hidden (avoids "no current session" warnings)
             sed -i 's/setenv -h/set-environment -g/g' $out/init.tmux
+
+            # Remove noisy display messages
+            sed -i '/display -p.*tmux-which-key/d' $out/init.tmux
           '';
 
           # Catppuccin mocha colors
