@@ -224,27 +224,25 @@ let
         zoxide add "$WORKSPACE"
       fi
 
-      # Get session name from directory
-      SESSION_NAME=$(basename "$WORKSPACE")
+      # Get window name from directory
+      WINDOW_NAME=$(basename "$WORKSPACE")
 
-      # Create or attach to session in the main client (outside popup)
-      # Using -d to not attach from popup, then switch-client to move main client
-      if ! tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-        tmux new-session -d -s "$SESSION_NAME" -c "$WORKSPACE"
-        # Setup the claude-dev layout in the new session
-        tmux send-keys -t "$SESSION_NAME" "nvim ." Enter
-        tmux split-window -t "$SESSION_NAME" -h -c "$WORKSPACE"
-        if command -v claude-smart >/dev/null 2>&1; then
-          tmux send-keys -t "$SESSION_NAME" "claude-smart" Enter
-        elif command -v claude >/dev/null 2>&1; then
-          tmux send-keys -t "$SESSION_NAME" "claude" Enter
-        fi
-        tmux select-pane -t "$SESSION_NAME" -L
+      # Get current session (works even from popup)
+      CURRENT_SESSION=$(tmux display-message -p '#S')
+
+      # Create new window in current session with claude-dev layout
+      tmux new-window -t "$CURRENT_SESSION" -n "$WINDOW_NAME" -c "$WORKSPACE"
+      tmux send-keys -t "$CURRENT_SESSION:$WINDOW_NAME" "nvim ." Enter
+      tmux split-window -t "$CURRENT_SESSION:$WINDOW_NAME" -h -c "$WORKSPACE"
+      if command -v claude-smart >/dev/null 2>&1; then
+        tmux send-keys -t "$CURRENT_SESSION:$WINDOW_NAME" "claude-smart" Enter
+      elif command -v claude >/dev/null 2>&1; then
+        tmux send-keys -t "$CURRENT_SESSION:$WINDOW_NAME" "claude" Enter
       fi
+      tmux select-pane -t "$CURRENT_SESSION:$WINDOW_NAME" -L
 
-      # Switch the main client (not the popup) to the new session
-      # $TMUX_PANE is set in popup, we need to find the parent client
-      tmux switch-client -t "$SESSION_NAME"
+      # Select the new window (popup will close and user sees new window)
+      tmux select-window -t "$CURRENT_SESSION:$WINDOW_NAME"
     fi
   '';
 
