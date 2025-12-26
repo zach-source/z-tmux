@@ -390,11 +390,22 @@
               select-pane -L
           '';
 
-          # Claude input monitoring script
+          # Claude input monitoring script (singleton via flock)
           claudeMonitorScript = pkgs.writeShellScriptBin "tmux-claude-monitor" ''
             #!/usr/bin/env bash
             # Monitor all panes for Claude waiting for input
             # Sets @claude_waiting on windows where Claude is waiting
+            # Uses flock to ensure only one instance runs at a time
+
+            # Singleton check using flock
+            LOCK_FILE="''${TMPDIR:-/tmp}/tmux-claude-monitor.lock"
+            exec 200>"$LOCK_FILE"
+            if ! ${pkgs.flock}/bin/flock -n 200; then
+              # Another instance is already running
+              exit 0
+            fi
+            # Write PID for debugging
+            echo $$ > "''${LOCK_FILE}.pid"
 
             check_pane_for_claude_waiting() {
               local pane_id="$1"
@@ -563,6 +574,9 @@
             set -g @tmux-which-key-xdg-enable 1
             set -g @tmux-which-key-disable-autobuild 1
             run-shell ${pluginsDir}/tmux-which-key/plugin.sh.tmux
+
+            # Auto-start Claude monitor (singleton - safe to call on every reload)
+            run-shell -b '${claudeMonitorScript}/bin/tmux-claude-monitor &'
           '';
 
         in
