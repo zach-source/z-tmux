@@ -9,150 +9,95 @@ let
   cfg = config.z-tmux;
 
   # ══════════════════════════════════════════════════════════════════════════
-  # Plugin Sources
+  # Plugins from nixpkgs (properly packaged with patched shebangs)
   # ══════════════════════════════════════════════════════════════════════════
 
-  # Core plugins
-  tpm = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tpm";
-    rev = "v3.1.0";
-    sha256 = "sha256-CeI9Wq6tHqV68woE11lIY4cLoNY8XWyXyMHTDmFKJKI=";
+  plugins = {
+    sensible = pkgs.tmuxPlugins.sensible;
+    yank = pkgs.tmuxPlugins.yank;
+    resurrect = pkgs.tmuxPlugins.resurrect;
+    continuum = pkgs.tmuxPlugins.continuum;
+    open = pkgs.tmuxPlugins.open;
+    sessionist = pkgs.tmuxPlugins.sessionist;
+    copycat = pkgs.tmuxPlugins.copycat;
+    logging = pkgs.tmuxPlugins.logging;
+    prefix-highlight = pkgs.tmuxPlugins.prefix-highlight;
+    which-key = pkgs.tmuxPlugins.tmux-which-key;
+    # cowboy not in nixpkgs - use mkTmuxPlugin
+    cowboy = pkgs.tmuxPlugins.mkTmuxPlugin {
+      pluginName = "cowboy";
+      version = "unstable-2021-08-01";
+      src = pkgs.fetchFromGitHub {
+        owner = "tmux-plugins";
+        repo = "tmux-cowboy";
+        rev = "75702b6d0a866769dd14f3896e9d19f7e0acd4f2";
+        sha256 = "sha256-KJNsdDLqT2Uzc25U4GLSB2O1SA/PThmDj9Aej5XjmJs=";
+      };
+      rtpFilePath = "cowboy.tmux";
+    };
   };
 
-  tmuxResurrect = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-resurrect";
-    rev = "v4.0.0";
-    sha256 = "sha256-44Ok7TbNfssMoBmOAqLLOj7oYRG3AQWrCuLzP8tA8Kg=";
-  };
-
-  tmuxContinuum = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-continuum";
-    rev = "v3.1.0";
-    sha256 = "sha256-e02cshLR9a2+uhrU/oew+FPTKhd4mi0/Q02ToHbbVrE=";
-  };
-
-  tmuxSensible = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-sensible";
-    rev = "v3.0.0";
-    sha256 = "sha256-ney/Y1YtCsWLgthOmoYGZTpPfJz+DravRB31YZgnDuU=";
-  };
-
-  tmuxYank = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-yank";
-    rev = "v2.3.0";
-    sha256 = "sha256-DQQCsBHxOo/BepclkICCtVUAL4pozS/RTJBcVLzICns=";
-  };
-
-  tmuxPrefixHighlight = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-prefix-highlight";
-    rev = "06cbb4ecd3a0a918ce355c70dc56d79debd455c7";
-    sha256 = "sha256-wkMm2Myxau24E0fbXINPuL2dc8E4ZYe5Pa6A0fWhiw4=";
-  };
-
-  tmuxWhichKey = pkgs.fetchFromGitHub {
-    owner = "alexwforsythe";
-    repo = "tmux-which-key";
-    rev = "1f419775caf136a60aac8e3a269b51ad10b51eb6";
-    sha256 = "sha256-X7FunHrAexDgAlZfN+JOUJvXFZeyVj9yu6WRnxMEA8E=";
-  };
-
-  # High value plugins
-  tmuxOpen = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-open";
-    rev = "763d0a852e6703ce0f5090a508330012a7e6788e";
-    sha256 = "sha256-Thii7D21MKodtjn/MzMjOGbJX8BwnS+fQqAtYv8CjPc=";
-  };
-
-  tmuxSessionist = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-sessionist";
-    rev = "a315c423328d9bdf5cf796435ce7075fa5e1bffb";
-    sha256 = "sha256-iC8NvuLujTXw4yZBaenHJ+2uM+HA9aW5b2rQTA8e69s=";
-  };
-
-  # Optional plugins
-  tmuxCowboy = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-cowboy";
-    rev = "75702b6d0a866769dd14f3896e9d19f7e0acd4f2";
-    sha256 = "sha256-KJNsdDLqT2Uzc25U4GLSB2O1SA/PThmDj9Aej5XjmJs=";
-  };
-
-  tmuxLogging = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-logging";
-    rev = "b5c5f7b9bc679ca161a442e932d6186da8d3538f";
-    sha256 = "sha256-NTDUXxy0Y0dp7qmcH5qqqENGvhzd3lLrIii5u0lYHJk=";
-  };
-
-  tmuxCopycat = pkgs.fetchFromGitHub {
-    owner = "tmux-plugins";
-    repo = "tmux-copycat";
-    rev = "d7f7e6c1de0bc0d6915f4beea5be6a8a42045c09";
-    sha256 = "sha256-2dMu/kbKLI/+kO05+qmeuJtAvvO7k9SSF+o2MHNllFk=";
-  };
+  # Runtime dependencies for plugin scripts (ps, kill, grep, etc.)
+  runtimeDeps = with pkgs; [
+    coreutils
+    procps
+    gnugrep
+    gawk
+    gnused
+    bash
+    findutils
+  ];
+  runtimePath = pkgs.lib.makeBinPath runtimeDeps;
 
   # ══════════════════════════════════════════════════════════════════════════
   # Plugin Bundle (dynamic based on enabled plugins)
   # ══════════════════════════════════════════════════════════════════════════
 
-  pluginsList = [
-    {
-      name = "tpm";
-      path = tpm;
+  pluginsList =
+    lib.optional cfg.plugins.sensible {
+      name = "tmux-sensible";
+      path = plugins.sensible;
     }
-  ]
-  ++ lib.optional cfg.plugins.sensible {
-    name = "tmux-sensible";
-    path = tmuxSensible;
-  }
-  ++ lib.optional cfg.plugins.yank {
-    name = "tmux-yank";
-    path = tmuxYank;
-  }
-  ++ lib.optional cfg.plugins.resurrect {
-    name = "tmux-resurrect";
-    path = tmuxResurrect;
-  }
-  ++ lib.optional cfg.plugins.continuum {
-    name = "tmux-continuum";
-    path = tmuxContinuum;
-  }
-  ++ lib.optional cfg.plugins.prefixHighlight {
-    name = "tmux-prefix-highlight";
-    path = tmuxPrefixHighlight;
-  }
-  ++ lib.optional cfg.plugins.open {
-    name = "tmux-open";
-    path = tmuxOpen;
-  }
-  ++ lib.optional cfg.plugins.sessionist {
-    name = "tmux-sessionist";
-    path = tmuxSessionist;
-  }
-  ++ lib.optional cfg.plugins.cowboy {
-    name = "tmux-cowboy";
-    path = tmuxCowboy;
-  }
-  ++ lib.optional cfg.plugins.logging {
-    name = "tmux-logging";
-    path = tmuxLogging;
-  }
-  ++ lib.optional cfg.plugins.copycat {
-    name = "tmux-copycat";
-    path = tmuxCopycat;
-  }
-  ++ lib.optional cfg.plugins.whichKey {
-    name = "tmux-which-key";
-    path = tmuxWhichKey;
-  };
+    ++ lib.optional cfg.plugins.yank {
+      name = "tmux-yank";
+      path = plugins.yank;
+    }
+    ++ lib.optional cfg.plugins.resurrect {
+      name = "tmux-resurrect";
+      path = plugins.resurrect;
+    }
+    ++ lib.optional cfg.plugins.continuum {
+      name = "tmux-continuum";
+      path = plugins.continuum;
+    }
+    ++ lib.optional cfg.plugins.prefixHighlight {
+      name = "tmux-prefix-highlight";
+      path = plugins.prefix-highlight;
+    }
+    ++ lib.optional cfg.plugins.open {
+      name = "tmux-open";
+      path = plugins.open;
+    }
+    ++ lib.optional cfg.plugins.sessionist {
+      name = "tmux-sessionist";
+      path = plugins.sessionist;
+    }
+    ++ lib.optional cfg.plugins.cowboy {
+      name = "tmux-cowboy";
+      path = plugins.cowboy;
+    }
+    ++ lib.optional cfg.plugins.logging {
+      name = "tmux-logging";
+      path = plugins.logging;
+    }
+    ++ lib.optional cfg.plugins.copycat {
+      name = "tmux-copycat";
+      path = plugins.copycat;
+    }
+    ++ lib.optional cfg.plugins.whichKey {
+      name = "tmux-which-key";
+      path = plugins.which-key;
+    };
 
   pluginsDir = pkgs.linkFarm "tmux-plugins" pluginsList;
 
@@ -410,9 +355,9 @@ let
   whichKeyInit = pkgs.runCommand "which-key-init" { } ''
     mkdir -p $out
 
-    # Copy build.py and patch the import
+    # Copy build.py and patch the import (using nixpkgs plugin path)
     sed 's/from pyyaml.lib import yaml/import yaml/' \
-      ${pluginsDir}/tmux-which-key/plugin/build.py > build.py
+      ${plugins.which-key}/share/tmux-plugins/tmux-which-key/plugin/build.py > build.py
 
     ${pythonWithYaml}/bin/python3 build.py ${whichKeyConfig} $out/init.tmux
   '';
@@ -580,17 +525,20 @@ let
     # Plugins
     # ══════════════════════════════════════════════════════════════════════
 
-    # Plugin path
+    # Runtime PATH for plugin scripts (ps, kill, grep, etc.)
+    set-environment -g PATH "${runtimePath}:$PATH"
+
+    # Plugin path for compatibility
     set-environment -g TMUX_PLUGIN_MANAGER_PATH "${pluginsDir}"
 
     ${lib.optionalString cfg.plugins.sensible ''
       # Sensible defaults
-      run-shell ${pluginsDir}/tmux-sensible/sensible.tmux
+      run-shell ${plugins.sensible}/share/tmux-plugins/sensible/sensible.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.yank ''
       # Yank (clipboard)
-      run-shell ${pluginsDir}/tmux-yank/yank.tmux
+      run-shell ${plugins.yank}/share/tmux-plugins/yank/yank.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.resurrect ''
@@ -601,49 +549,49 @@ let
       set -g @resurrect-strategy-ssh 'off'
       set -g @resurrect-strategy-mosh 'off'
       # Manual save/restore keybindings
-      bind C-s run-shell "${pluginsDir}/tmux-resurrect/scripts/save.sh" \; display "Session saved"
-      bind C-r run-shell "${pluginsDir}/tmux-resurrect/scripts/restore.sh" \; display "Session restored"
-      run-shell ${pluginsDir}/tmux-resurrect/resurrect.tmux
+      bind C-s run-shell "${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh" \; display "Session saved"
+      bind C-r run-shell "${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/restore.sh" \; display "Session restored"
+      run-shell ${plugins.resurrect}/share/tmux-plugins/resurrect/resurrect.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.continuum ''
       # Continuum (auto-save)
       set -g @continuum-save-interval '${toString cfg.saveInterval}'
       set -g @continuum-restore 'off'
-      run-shell ${pluginsDir}/tmux-continuum/continuum.tmux
+      run-shell ${plugins.continuum}/share/tmux-plugins/continuum/continuum.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.open ''
       # Open (URLs/files from copy mode)
-      run-shell ${pluginsDir}/tmux-open/open.tmux
+      run-shell ${plugins.open}/share/tmux-plugins/open/open.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.sessionist ''
       # Sessionist (session management)
-      run-shell ${pluginsDir}/tmux-sessionist/sessionist.tmux
+      run-shell ${plugins.sessionist}/share/tmux-plugins/sessionist/sessionist.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.cowboy ''
       # Cowboy (kill unresponsive processes)
-      run-shell ${pluginsDir}/tmux-cowboy/cowboy.tmux
+      run-shell ${plugins.cowboy}/share/tmux-plugins/cowboy/cowboy.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.logging ''
       # Logging (pane capture)
       set -g @logging-path "${cfg.loggingPath}"
-      run-shell ${pluginsDir}/tmux-logging/logging.tmux
+      run-shell ${plugins.logging}/share/tmux-plugins/logging/logging.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.copycat ''
       # Copycat (regex search)
-      run-shell ${pluginsDir}/tmux-copycat/copycat.tmux
+      run-shell ${plugins.copycat}/share/tmux-plugins/copycat/copycat.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.whichKey ''
       # Which-key (using traditional ~/.tmux/ paths)
       set -g @tmux-which-key-xdg-enable 0
       set -g @tmux-which-key-disable-autobuild 1
-      run-shell ${pluginsDir}/tmux-which-key/plugin.sh.tmux
+      run-shell ${plugins.which-key}/share/tmux-plugins/tmux-which-key/plugin.sh.tmux
     ''}
 
     ${lib.optionalString cfg.plugins.claudeMonitor ''
