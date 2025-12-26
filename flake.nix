@@ -292,8 +292,9 @@
                 zoxide add "$WORKSPACE"
               fi
 
-              # Change to workspace and launch claude-dev
-              cd "$WORKSPACE" && tmux-claude-dev
+              # Schedule the window creation in the main session (not the popup)
+              # Using run-shell -b runs it in background after popup closes
+              tmux run-shell -b "cd '$WORKSPACE' && tmux-claude-dev"
             fi
           '';
 

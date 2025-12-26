@@ -54,16 +54,28 @@ items:
     command: last-pane
   - separator: true
 
-  # Workspace launcher
-  - name: "Workspace"
-    key: W
-    macro: ztmux-workspace
-  - name: "Split"
-    key: "|"
-    macro: ztmux-split
-  - name: "Claude-dev"
-    key: C
-    macro: ztmux-claude-dev
+  # Quick rename
+  - name: "Rename window"
+    key: ","
+    command: command-prompt -I "#W" "rename-window '%%'"
+  - name: "Rename session"
+    key: "$"
+    command: command-prompt -I "#S" "rename-session '%%'"
+  - separator: true
+
+  # Launchers submenu
+  - name: "+Launchers"
+    key: L
+    menu:
+      - name: "Workspace"
+        key: w
+        macro: ztmux-workspace
+      - name: "Split"
+        key: s
+        macro: ztmux-split
+      - name: "Claude-dev"
+        key: c
+        macro: ztmux-claude-dev
 
   # Copy submenu
   - name: "+Copy"
