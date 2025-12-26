@@ -336,15 +336,29 @@
             SESSION_NAME=$(tmux display-message -p '#S')
             TMUXP_DIR="''${ZTMUX_TMUXP_DIR:-$HOME/.config/tmuxp}"
             OUTPUT_FILE="$TMUXP_DIR/$SESSION_NAME.yaml"
+            TEMP_FILE=$(mktemp)
 
             mkdir -p "$TMUXP_DIR"
 
-            if command -v tmuxp >/dev/null 2>&1; then
-              tmuxp freeze -o "$OUTPUT_FILE" -y
-              tmux display-message "Session saved to $OUTPUT_FILE"
-            else
+            if ! command -v tmuxp >/dev/null 2>&1; then
               tmux display-message "tmuxp not found!"
+              exit 1
             fi
+
+            # Freeze the session
+            tmuxp freeze -o "$TEMP_FILE" -y
+
+            # Clean up claude version-specific commands
+            # Claude runs as: /nix/store/xxx-claude-code-xxx/bin/claude or similar
+            # Replace with generic "claude" or "claude-smart" command
+            ${pkgs.gnused}/bin/sed -i \
+              -e 's|/nix/store/[^/]*/bin/claude[^ ]*|claude|g' \
+              -e 's|shell_command: claude [0-9.]*|shell_command: claude|g' \
+              -e 's|shell_command:.*claude-code.*/bin/claude.*|shell_command: claude|g' \
+              "$TEMP_FILE"
+
+            mv "$TEMP_FILE" "$OUTPUT_FILE"
+            tmux display-message "Session saved to $OUTPUT_FILE (claude paths normalized)"
           '';
 
           splitWindowScript = pkgs.writeShellScriptBin "tmux-split-window" ''
@@ -374,6 +388,60 @@
               split-window -h -c "$WORK_DIR" \; \
               send-keys "$CLAUDE_CMD" Enter \; \
               select-pane -L
+          '';
+
+          # Claude input monitoring script
+          claudeMonitorScript = pkgs.writeShellScriptBin "tmux-claude-monitor" ''
+            #!/usr/bin/env bash
+            # Monitor all panes for Claude waiting for input
+            # Sets @claude_waiting on windows where Claude is waiting
+
+            check_pane_for_claude_waiting() {
+              local pane_id="$1"
+              local window_id="$2"
+
+              # Capture the last 5 lines of the pane
+              local content=$(tmux capture-pane -t "$pane_id" -p -S -5 2>/dev/null)
+
+              # Check for Claude's waiting prompt patterns:
+              # - Line starting with > (Claude's input prompt)
+              # - "Waiting for your" pattern
+              # - Empty line after output indicating ready for input
+              if echo "$content" | grep -qE '^\s*>\s*$|^>\s|Waiting for|waiting for your|^claude>|Human:.*$'; then
+                echo "waiting"
+                return 0
+              fi
+
+              echo "active"
+              return 1
+            }
+
+            # Main monitoring loop
+            while true; do
+              # Get all panes
+              tmux list-panes -a -F '#{pane_id} #{window_id} #{window_name}' 2>/dev/null | while read -r pane_id window_id window_name; do
+                # Only check panes that might have claude (claude-dev windows or panes running claude)
+                pane_cmd=$(tmux display-message -t "$pane_id" -p '#{pane_current_command}' 2>/dev/null)
+
+                if [[ "$window_name" == *"claude"* ]] || [[ "$pane_cmd" == *"claude"* ]] || [[ "$pane_cmd" == "node" ]]; then
+                  status=$(check_pane_for_claude_waiting "$pane_id" "$window_id")
+                  current=$(tmux show-window-option -t "$window_id" -v @claude_waiting 2>/dev/null)
+
+                  if [[ "$status" == "waiting" ]] && [[ "$current" != "1" ]]; then
+                    tmux set-window-option -t "$window_id" @claude_waiting 1
+                  fi
+                fi
+              done
+
+              sleep 2
+            done
+          '';
+
+          # Script to clear claude waiting indicator on focus
+          claudeClearWaitingScript = pkgs.writeShellScriptBin "tmux-claude-clear-waiting" ''
+            #!/usr/bin/env bash
+            # Clear the waiting indicator for the current window
+            tmux set-window-option @claude_waiting 0 2>/dev/null
           '';
 
           # Which-key configuration
@@ -430,9 +498,12 @@
             set -g status-left-length 50
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
             set -g status-right-length 100
-            set -g status-right "#[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold] 󰉋 #{=30:pane_current_path} "
-            set -g window-status-format "#[fg=${colors.overlay0}] #I:#W "
+            set -g status-right "#[fg=${colors.overlay0}]%H:%M #[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold] 󰒋 #h "
+            set -g window-status-format "#[fg=${colors.overlay0}] #I:#W#{?@claude_waiting, 󰋼,} "
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
+
+            # Clear claude waiting indicator on window focus
+            set-hook -g pane-focus-in 'set-window-option @claude_waiting 0'
             set -g window-status-separator " "
             set -g pane-border-style "fg=${colors.surface0}"
             set -g pane-active-border-style "fg=${colors.blue}"
@@ -501,7 +572,7 @@
           # Test package for trying out the configuration
           test = pkgs.writeShellScriptBin "z-tmux-test" ''
             export TMUX_PLUGIN_MANAGER_PATH="${pluginsDir}"
-            export PATH="${workspaceLauncher}/bin:${tmuxpLoader}/bin:${tmuxpExportScript}/bin:${splitWindowScript}/bin:${claudeDevScript}/bin:$PATH"
+            export PATH="${workspaceLauncher}/bin:${tmuxpLoader}/bin:${tmuxpExportScript}/bin:${splitWindowScript}/bin:${claudeDevScript}/bin:${claudeMonitorScript}/bin:${claudeClearWaitingScript}/bin:$PATH"
 
             # Configurable paths (override via ZTMUX_* environment variables)
             export ZTMUX_WORKSPACES_DIR="''${ZTMUX_WORKSPACES_DIR:-$HOME/repos/workspaces}"
