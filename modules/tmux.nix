@@ -779,6 +779,16 @@ in
       fi
     '';
 
+    # Clean up stale tmux sockets when version changes
+    # This prevents "server exited unexpectedly" errors after tmux upgrades
+    home.activation.cleanTmuxSockets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      TMUX_SOCKET_DIR="/tmp/tmux-$(id -u)"
+      if [ -d "$TMUX_SOCKET_DIR" ] && ! ${cfg.package}/bin/tmux list-sessions &>/dev/null; then
+        $DRY_RUN_CMD rm -rf "$TMUX_SOCKET_DIR"
+        $VERBOSE_ECHO "Cleaned stale tmux sockets at $TMUX_SOCKET_DIR"
+      fi
+    '';
+
     # NOTE: We don't use programs.tmux because we need full control over plugin loading
     # and the Nix store paths. The config is managed via home.file instead.
   };
