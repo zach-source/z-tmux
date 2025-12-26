@@ -533,9 +533,9 @@ let
     set -g status-right "#[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold] 󰉋 #{=30:pane_current_path} "
 
     # Window status (with optional Claude waiting indicator)
-    set -g window-status-format "#[fg=${colors.overlay0}] #I:#W#{?@claude_waiting, 󰋼,} "
+    set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
     set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
-    set -g window-status-separator " "
+    set -g window-status-separator "  "
 
     # Clear Claude waiting indicator on window focus
     set-hook -g pane-focus-in 'set-window-option @claude_waiting 0'
@@ -640,8 +640,8 @@ let
     ''}
 
     ${lib.optionalString cfg.plugins.whichKey ''
-      # Which-key (must load after other plugins for keybind discovery)
-      set -g @tmux-which-key-xdg-enable 1
+      # Which-key (using traditional ~/.tmux/ paths)
+      set -g @tmux-which-key-xdg-enable 0
       set -g @tmux-which-key-disable-autobuild 1
       run-shell ${pluginsDir}/tmux-which-key/plugin.sh.tmux
     ''}
@@ -852,18 +852,16 @@ in
     # Main tmux configuration (symlink to ~/.tmux.conf for reload-config)
     home.file.".tmux.conf".source = tmuxConf;
 
-    # Which-key XDG config (config.yaml for reference)
-    xdg.configFile."tmux/plugins/tmux-which-key/config.yaml" = lib.mkIf cfg.plugins.whichKey {
+    # Which-key config and init (traditional ~/.tmux/ paths)
+    home.file.".tmux/plugins/tmux-which-key/config.yaml" = lib.mkIf cfg.plugins.whichKey {
       source = whichKeyConfig;
     };
-
-    # Which-key XDG data (pre-generated init.tmux)
-    xdg.dataFile."tmux/plugins/tmux-which-key/init.tmux" = lib.mkIf cfg.plugins.whichKey {
+    home.file.".tmux/plugins/tmux-which-key/init.tmux" = lib.mkIf cfg.plugins.whichKey {
       source = "${whichKeyInit}/init.tmux";
     };
 
     # tmuxp session configs
-    xdg.configFile."tmuxp/.keep" = lib.mkIf cfg.enableTmuxp { text = ""; };
+    home.file.".config/tmuxp/.keep" = lib.mkIf cfg.enableTmuxp { text = ""; };
 
     # Remove existing .tmux.conf before home-manager creates symlink
     # This prevents "file in the way" errors when switching from manual config

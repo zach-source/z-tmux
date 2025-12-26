@@ -510,12 +510,12 @@
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
             set -g status-right-length 100
             set -g status-right "#[fg=${colors.overlay0}]%H:%M #[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold] 󰒋 #h "
-            set -g window-status-format "#[fg=${colors.overlay0}] #I:#W#{?@claude_waiting, 󰋼,} "
+            set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
+            set -g window-status-separator "  "
 
             # Clear claude waiting indicator on window focus
             set-hook -g pane-focus-in 'set-window-option @claude_waiting 0'
-            set -g window-status-separator " "
             set -g pane-border-style "fg=${colors.surface0}"
             set -g pane-active-border-style "fg=${colors.blue}"
 
@@ -570,8 +570,8 @@
             run-shell ${pluginsDir}/tmux-logging/logging.tmux
             run-shell ${pluginsDir}/tmux-copycat/copycat.tmux
 
-            # Which-key
-            set -g @tmux-which-key-xdg-enable 1
+            # Which-key (using traditional ~/.tmux/ paths)
+            set -g @tmux-which-key-xdg-enable 0
             set -g @tmux-which-key-disable-autobuild 1
             run-shell ${pluginsDir}/tmux-which-key/plugin.sh.tmux
 
@@ -610,16 +610,12 @@
               export SHELL="$ZSH_BIN"
             fi
 
-            # Set up which-key
-            TEST_DIR="$HOME/.cache/z-tmux-test"
-            export XDG_CONFIG_HOME="$TEST_DIR/config"
-            export XDG_DATA_HOME="$TEST_DIR/data"
-            WHICH_KEY_CONFIG="$XDG_CONFIG_HOME/tmux/plugins/tmux-which-key"
-            WHICH_KEY_DATA="$XDG_DATA_HOME/tmux/plugins/tmux-which-key"
-            mkdir -p "$WHICH_KEY_CONFIG" "$WHICH_KEY_DATA"
+            # Set up which-key in traditional ~/.tmux/ location
+            WHICH_KEY_DIR="$HOME/.tmux/plugins/tmux-which-key"
+            mkdir -p "$WHICH_KEY_DIR"
 
-            cp -f ${whichKeyConfig} "$WHICH_KEY_CONFIG/config.yaml"
-            cp -f ${whichKeyInit}/init.tmux "$WHICH_KEY_DATA/init.tmux"
+            cp -f ${whichKeyConfig} "$WHICH_KEY_DIR/config.yaml"
+            cp -f ${whichKeyInit}/init.tmux "$WHICH_KEY_DIR/init.tmux"
 
             # Symlink config for reload-config
             ln -sf ${tmuxConfNix} "$HOME/.tmux.conf"
