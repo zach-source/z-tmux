@@ -444,6 +444,7 @@
           tmuxConfNix = pkgs.writeText "tmux.conf" ''
             # z-tmux test configuration
             set -g default-shell $SHELL
+            set -g default-command "${pkgs.reattach-to-user-namespace}/bin/reattach-to-user-namespace -l $SHELL"
             set -g default-terminal "tmux-256color"
             set -ag terminal-overrides ",xterm-256color:RGB"
             set -as terminal-features ",xterm-256color:RGB"
