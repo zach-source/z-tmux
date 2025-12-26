@@ -420,6 +420,9 @@
               ${plugins.which-key}/share/tmux-plugins/tmux-which-key/plugin/build.py > build.py
 
             ${pythonWithYaml}/bin/python3 build.py ${whichKeyConfig} $out/init.tmux
+
+            # Fix: use global environment instead of session-hidden (avoids "no current session" warnings)
+            sed -i 's/setenv -h/set-environment -g/g' $out/init.tmux
           '';
 
           # Catppuccin mocha colors
