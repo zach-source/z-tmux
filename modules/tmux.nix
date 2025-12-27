@@ -53,50 +53,52 @@ let
   # Plugin Bundle (dynamic based on enabled plugins)
   # ══════════════════════════════════════════════════════════════════════════
 
+  # Link to the actual plugin directories inside share/tmux-plugins/
+  # This ensures TMUX_PLUGIN_MANAGER_PATH works correctly with TPM-style paths
   pluginsList =
     lib.optional cfg.plugins.sensible {
       name = "tmux-sensible";
-      path = plugins.sensible;
+      path = "${plugins.sensible}/share/tmux-plugins/sensible";
     }
     ++ lib.optional cfg.plugins.yank {
       name = "tmux-yank";
-      path = plugins.yank;
+      path = "${plugins.yank}/share/tmux-plugins/yank";
     }
     ++ lib.optional cfg.plugins.resurrect {
       name = "tmux-resurrect";
-      path = plugins.resurrect;
+      path = "${plugins.resurrect}/share/tmux-plugins/resurrect";
     }
     ++ lib.optional cfg.plugins.continuum {
       name = "tmux-continuum";
-      path = plugins.continuum;
+      path = "${plugins.continuum}/share/tmux-plugins/continuum";
     }
     ++ lib.optional cfg.plugins.prefixHighlight {
       name = "tmux-prefix-highlight";
-      path = plugins.prefix-highlight;
+      path = "${plugins.prefix-highlight}/share/tmux-plugins/prefix-highlight";
     }
     ++ lib.optional cfg.plugins.open {
       name = "tmux-open";
-      path = plugins.open;
+      path = "${plugins.open}/share/tmux-plugins/open";
     }
     ++ lib.optional cfg.plugins.sessionist {
       name = "tmux-sessionist";
-      path = plugins.sessionist;
+      path = "${plugins.sessionist}/share/tmux-plugins/sessionist";
     }
     ++ lib.optional cfg.plugins.cowboy {
       name = "tmux-cowboy";
-      path = plugins.cowboy;
+      path = "${plugins.cowboy}/share/tmux-plugins/cowboy";
     }
     ++ lib.optional cfg.plugins.logging {
       name = "tmux-logging";
-      path = plugins.logging;
+      path = "${plugins.logging}/share/tmux-plugins/logging";
     }
     ++ lib.optional cfg.plugins.copycat {
       name = "tmux-copycat";
-      path = plugins.copycat;
+      path = "${plugins.copycat}/share/tmux-plugins/copycat";
     }
     ++ lib.optional cfg.plugins.whichKey {
       name = "tmux-which-key";
-      path = plugins.which-key;
+      path = "${plugins.which-key}/share/tmux-plugins/tmux-which-key";
     };
 
   pluginsDir = pkgs.linkFarm "tmux-plugins" pluginsList;
