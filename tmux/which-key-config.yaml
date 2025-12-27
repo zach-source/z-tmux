@@ -99,6 +99,7 @@ items:
         command: 'display-message "In copy mode: o opens file/URL, Ctrl-o opens in editor"'
 
   # Search submenu (copycat)
+  # Uses copycat_mode_start.sh with patterns defined in copycat plugin
   - name: "+Search"
     key: "/"
     menu:
@@ -107,22 +108,22 @@ items:
         command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_search.sh"
       - name: "󰈔 Files"
         key: f
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_file_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '(^|^\\.|[[:space:]]|[[:space:]]\\.|[[:space:]]\\.\\.|^\\.\\.)[[:alnum:]~_-]*/[][[:alnum:]_.#$%&+=/@-]*'"
       - name: " URLs"
         key: u
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_url_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '(https?://|git@|git://|ssh://|ftp://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'"
       - name: "󰊕 Git files"
         key: g
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_git_special.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_git_special.sh #{pane_current_path}"
       - name: " Digits"
         key: d
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_digit_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '[[:digit:]]+'"
       - name: " Hashes"
         key: h
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_hash_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '\\b([0-9a-f]{7,40}|[[:alnum:]]{52}|[0-9a-f]{64})\\b'"
       - name: "󰇥 IP addresses"
         key: i
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_ip_search.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'"
 
   # Windows submenu
   - name: "+Windows"
