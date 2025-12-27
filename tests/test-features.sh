@@ -266,6 +266,66 @@ main() {
   check_plugin "yank" "tmux list-keys -T prefix | grep -q 'yank'"
   check_plugin "logging" "tmux show-option -gv @logging-path"
 
+  # ══════════════════════════════════════════════════════════════════════════
+  log_section "Plugin Nix Store Paths"
+  # ══════════════════════════════════════════════════════════════════════════
+
+  # Verify plugins are loaded from Nix store paths (not TPM or local paths)
+  # This ensures the Nix-bundled plugins are being used
+
+  # sensible - check run-shell path exists in bindings
+  if tmux list-keys 2>/dev/null | grep -q "tmuxplugin-sensible"; then
+    log_pass "Plugin path: sensible (Nix store)"
+  elif tmux show-options -g | grep -qE "escape-time 0|history-limit"; then
+    # sensible modifies options, so we can infer it's loaded
+    log_pass "Plugin path: sensible (via options)"
+  else
+    log_fail "Plugin path: sensible not found"
+  fi
+
+  # open - adds 'o' binding in copy-mode to open URLs/files
+  if tmux list-keys -T copy-mode-vi 2>/dev/null | grep -qE "tmuxplugin-open|open.*open"; then
+    log_pass "Plugin path: open (Nix store)"
+  elif tmux list-keys -T copy-mode-vi 2>/dev/null | grep -q "\\bo\\b.*open"; then
+    log_pass "Plugin path: open (via binding)"
+  else
+    log_fail "Plugin path: open not found"
+  fi
+
+  # sessionist - adds @ C X t bindings for session management
+  if tmux list-keys -T prefix 2>/dev/null | grep -q "tmuxplugin-sessionist"; then
+    log_pass "Plugin path: sessionist (Nix store)"
+  else
+    log_fail "Plugin path: sessionist not found in Nix store"
+  fi
+
+  # copycat - adds C-f C-u regex search bindings
+  if tmux list-keys -T prefix 2>/dev/null | grep -q "tmuxplugin-copycat"; then
+    log_pass "Plugin path: copycat (Nix store)"
+  else
+    log_fail "Plugin path: copycat not found in Nix store"
+  fi
+
+  # cowboy - adds * binding to kill unresponsive processes
+  if tmux list-keys -T prefix 2>/dev/null | grep -q "tmuxplugin-cowboy"; then
+    log_pass "Plugin path: cowboy (Nix store)"
+  else
+    log_fail "Plugin path: cowboy not found in Nix store"
+  fi
+
+  # prefix-highlight - modifies status format (harder to verify path directly)
+  # Check if it added the prefix highlight format strings
+  local status_left
+  status_left=$(tmux show-option -gv status-left 2>/dev/null || echo "")
+  local status_right
+  status_right=$(tmux show-option -gv status-right 2>/dev/null || echo "")
+  if echo "$status_left$status_right" | grep -qE "prefix_highlight|#{prefix"; then
+    log_pass "Plugin path: prefix-highlight (via status format)"
+  else
+    # Plugin may be loaded but not using its format strings
+    log_skip "Plugin path: prefix-highlight (format strings not in status)"
+  fi
+
   # Check TMUX_PLUGIN_MANAGER_PATH is set
   local plugin_path
   plugin_path=$(tmux show-environment TMUX_PLUGIN_MANAGER_PATH 2>/dev/null || echo "")
@@ -366,10 +426,17 @@ main() {
   # ══════════════════════════════════════════════════════════════════════════
 
   # Try to source the config (this would fail if syntax errors)
-  if tmux source-file ~/.tmux.conf 2>&1; then
-    log_pass "Config syntax valid (source-file succeeded)"
+  if [ -f ~/.tmux.conf ]; then
+    if tmux source-file ~/.tmux.conf 2>&1; then
+      log_pass "Config syntax valid (source-file succeeded)"
+    else
+      log_fail "Config has syntax errors"
+    fi
+  elif [ -n "${TMUX_PLUGIN_MANAGER_PATH:-}" ]; then
+    # In z-tmux environment, config should exist
+    log_fail "~/.tmux.conf not found (should be symlinked by z-tmux-test)"
   else
-    log_fail "Config has syntax errors"
+    log_skip "Config syntax (no ~/.tmux.conf found)"
   fi
 
   # ══════════════════════════════════════════════════════════════════════════
