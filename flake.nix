@@ -544,14 +544,22 @@
             run-shell -b '${claudeMonitorScript}/bin/tmux-claude-monitor &'
           '';
 
+          # Test script for validating features
+          testScript = pkgs.writeShellScriptBin "z-tmux-test-features" ''
+            ${builtins.readFile ./tests/test-features.sh}
+          '';
+
         in
         {
           default = self.packages.${system}.test;
 
+          # Feature test suite (run inside tmux)
+          test-features = testScript;
+
           # Test package for trying out the configuration
           test = pkgs.writeShellScriptBin "z-tmux-test" ''
             export TMUX_PLUGIN_MANAGER_PATH="${pluginsDir}"
-            export PATH="${workspaceLauncher}/bin:${tmuxpLoader}/bin:${tmuxpExportScript}/bin:${splitWindowScript}/bin:${claudeDevScript}/bin:${claudeMonitorScript}/bin:${claudeClearWaitingScript}/bin:$PATH"
+            export PATH="${workspaceLauncher}/bin:${tmuxpLoader}/bin:${tmuxpExportScript}/bin:${splitWindowScript}/bin:${claudeDevScript}/bin:${claudeMonitorScript}/bin:${claudeClearWaitingScript}/bin:${testScript}/bin:$PATH"
 
             # Configurable paths (override via ZTMUX_* environment variables)
             export ZTMUX_WORKSPACES_DIR="''${ZTMUX_WORKSPACES_DIR:-$HOME/repos/workspaces}"
