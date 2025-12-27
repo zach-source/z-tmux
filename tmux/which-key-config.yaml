@@ -114,7 +114,7 @@ items:
         command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '(https?://|git@|git://|ssh://|ftp://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'"
       - name: "󰊕 Git files"
         key: g
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_git_special.sh #{pane_current_path}"
+        command: 'run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_git_special.sh ##{pane_current_path}"'
       - name: " Digits"
         key: d
         command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '[[:digit:]]+'"
