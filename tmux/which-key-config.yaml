@@ -264,7 +264,7 @@ items:
         macro: ztmux-restart-pane
       - name: "󰚌 Kill process"
         key: "*"
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-cowboy/scripts/kill_process.sh"
+        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-cowboy/scripts/kill.sh KILL"
       - name: Kill pane
         key: X
         command: confirm -p "Kill this pane? (y/n)" kill-pane
