@@ -480,18 +480,18 @@ let
     set -g @mode_indicator_sync_mode_style "fg=${colors.base},bg=${colors.red},bold"
     set -g @mode_indicator_empty_mode_style "fg=${colors.base},bg=${colors.green},bold"
 
-    # Status left: session name with powerline
+    # Status left: session name with rounded powerline
     set -g status-left-length 50
-    set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
+    set -g status-left "#[fg=${colors.green},bg=default]#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default] "
 
-    # Status right: user@host
+    # Status right: user@host with rounded powerline
     set -g status-right-length 60
-    set -g status-right "#[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h "
+    set -g status-right "#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
 
-    # Window status (with optional Claude waiting indicator)
-    set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
-    set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
-    set -g window-status-separator "  "
+    # Window status with rounded tabs
+    set -g window-status-format "#[fg=${colors.surface0},bg=default]#[fg=${colors.overlay0},bg=${colors.surface0}] #I:#W#{?@claude_waiting, 󰋼,} #[fg=${colors.surface0},bg=default]"
+    set -g window-status-current-format "#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold] #I:#W #[fg=${colors.blue},bg=default]"
+    set -g window-status-separator " "
 
     # Clear Claude waiting indicator on window focus
     set-hook -g pane-focus-in 'set-window-option @claude_waiting 0'
