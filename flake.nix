@@ -500,6 +500,9 @@
             bind S run-shell "${tmuxpExportScript}/bin/tmux-save-layout"
             bind -T copy-mode-vi v send -X begin-selection
             bind -T copy-mode-vi y send -X copy-selection-and-cancel
+            # Copy on mouse selection
+            set -g @yank_selection_mouse 'clipboard'
+            bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-selection-and-cancel
 
             # Runtime PATH for plugin scripts (ps, kill, grep, etc.)
             set-environment -g PATH "${runtimePath}:$PATH"
