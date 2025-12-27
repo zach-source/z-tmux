@@ -484,9 +484,9 @@ let
     set -g status-left-length 50
     set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
 
-    # Status right: user@host and directory
-    set -g status-right-length 120
-    set -g status-right "#[fg=${colors.overlay0}]$USER@#h #[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold] 󰉋 #{=30:pane_current_path} "
+    # Status right: user@host
+    set -g status-right-length 60
+    set -g status-right "#[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h "
 
     # Window status (with optional Claude waiting indicator)
     set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
