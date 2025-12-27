@@ -99,31 +99,31 @@ items:
         command: 'display-message "In copy mode: o opens file/URL, Ctrl-o opens in editor"'
 
   # Search submenu (copycat)
-  # Uses copycat_mode_start.sh with patterns defined in copycat plugin
+  # Uses send-keys to trigger copycat's prefix bindings
   - name: "+Search"
     key: "/"
     menu:
       - name: "Regex search"
         key: "/"
         command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_search.sh"
-      - name: "󰈔 Files"
+      - name: "󰈔 Files (C-f)"
         key: f
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '(^|^\\.|[[:space:]]|[[:space:]]\\.|[[:space:]]\\.\\.|^\\.\\.)[[:alnum:]~_-]*/[][[:alnum:]_.#$%&+=/@-]*'"
-      - name: " URLs"
+        command: send-keys C-b C-f
+      - name: " URLs (C-u)"
         key: u
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '(https?://|git@|git://|ssh://|ftp://|file:///)[[:alnum:]?=%/_.:,;~@!#$&()*+-]*'"
-      - name: "󰊕 Git files"
+        command: send-keys C-b C-u
+      - name: "󰊕 Git files (C-g)"
         key: g
-        command: 'run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_git_special.sh ##{pane_current_path}"'
-      - name: " Digits"
+        command: send-keys C-b C-g
+      - name: " Digits (C-d)"
         key: d
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '[[:digit:]]+'"
-      - name: " Hashes"
+        command: send-keys C-b C-d
+      - name: " Hashes (M-h)"
         key: h
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '\\b([0-9a-f]{7,40}|[[:alnum:]]{52}|[0-9a-f]{64})\\b'"
-      - name: "󰇥 IP addresses"
+        command: send-keys C-b M-h
+      - name: "󰇥 IP addresses (M-i)"
         key: i
-        command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-copycat/scripts/copycat_mode_start.sh '[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}'"
+        command: send-keys C-b M-i
 
   # Windows submenu
   - name: "+Windows"
