@@ -9,7 +9,7 @@ let
   cfg = config.z-tmux;
 
   # z-tmux version
-  version = "0.2.21";
+  version = "0.2.22";
 
   # ══════════════════════════════════════════════════════════════════════════
   # Plugins from nixpkgs (properly packaged with patched shebangs)
@@ -474,6 +474,18 @@ let
     set -g default-terminal "tmux-256color"
     set -ag terminal-overrides ",xterm-256color:RGB"
     set -as terminal-features ",xterm-256color:RGB"
+
+    ${lib.optionalString cfg.enableRemoteClipboard ''
+      # OSC 52 clipboard support for remote sessions
+      # Enables copying to local clipboard when SSH'd into remote hosts
+      set -g set-clipboard on
+      set -as terminal-features ",xterm-256color:clipboard"
+      # Allow tmux to set the terminal clipboard via OSC 52
+      set -ag terminal-overrides ",xterm-256color:Ms=\\E]52;c;%p2%s\\7"
+      set -ag terminal-overrides ",screen-256color:Ms=\\E]52;c;%p2%s\\7"
+      set -ag terminal-overrides ",tmux-256color:Ms=\\E]52;c;%p2%s\\7"
+    ''}
+
     set -g prefix ${cfg.prefix}
     set -g mode-keys vi
     set -g mouse on
@@ -486,6 +498,21 @@ let
     set -g allow-rename off
     setw -g monitor-activity on
     set -g visual-activity off
+
+    # ══════════════════════════════════════════════════════════════════════
+    # Remote/SSH Session Support
+    # ══════════════════════════════════════════════════════════════════════
+
+    # Update environment variables when attaching to existing sessions
+    # This ensures SSH agent forwarding and display settings work correctly
+    set -g update-environment "SSH_AUTH_SOCK SSH_CONNECTION SSH_CLIENT SSH_TTY DISPLAY XAUTHORITY"
+
+    # Detect SSH session and set @ssh option
+    if-shell '[ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ] || [ -n "$SSH_CONNECTION" ]' {
+      set -g @ssh 1
+    } {
+      set -g @ssh 0
+    }
 
     # ══════════════════════════════════════════════════════════════════════
     # Status Bar - Catppuccin ${cfg.catppuccinFlavor}
@@ -697,6 +724,16 @@ in
       type = lib.types.bool;
       default = true;
       description = "Whether to install mosh";
+    };
+
+    enableRemoteClipboard = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Enable OSC 52 clipboard support for copying from remote SSH sessions.
+        This allows clipboard integration when SSH'd into remote hosts.
+        Requires a terminal that supports OSC 52 (iTerm2, Alacritty, Kitty, etc.)
+      '';
     };
 
     enableTmuxp = lib.mkOption {

@@ -160,6 +160,37 @@ main() {
   check_option "monitor-activity" "on" "-gw"
 
   # ══════════════════════════════════════════════════════════════════════════
+  log_section "Remote/SSH Features"
+  # ══════════════════════════════════════════════════════════════════════════
+
+  # Check OSC 52 clipboard support
+  local set_clipboard
+  set_clipboard=$(tmux show-option -gv set-clipboard 2>/dev/null || echo "")
+  if [ "$set_clipboard" = "on" ] || [ "$set_clipboard" = "external" ]; then
+    log_pass "set-clipboard enabled for remote copy ($set_clipboard)"
+  else
+    log_skip "set-clipboard not enabled (may be different config)"
+  fi
+
+  # Check update-environment includes SSH variables
+  local update_env
+  update_env=$(tmux show-option -gv update-environment 2>/dev/null || echo "")
+  if echo "$update_env" | grep -q "SSH_AUTH_SOCK"; then
+    log_pass "update-environment includes SSH_AUTH_SOCK"
+  else
+    log_skip "update-environment SSH settings (may be different config)"
+  fi
+
+  # Check @ssh option is set (0 or 1)
+  local ssh_opt
+  ssh_opt=$(tmux show-option -gv @ssh 2>/dev/null || echo "")
+  if [ "$ssh_opt" = "0" ] || [ "$ssh_opt" = "1" ]; then
+    log_pass "@ssh option set ($ssh_opt)"
+  else
+    log_skip "@ssh option not set (may be different config)"
+  fi
+
+  # ══════════════════════════════════════════════════════════════════════════
   log_section "Status Bar"
   # ══════════════════════════════════════════════════════════════════════════
 

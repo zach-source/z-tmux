@@ -448,6 +448,14 @@
             set -g default-terminal "tmux-256color"
             set -ag terminal-overrides ",xterm-256color:RGB"
             set -as terminal-features ",xterm-256color:RGB"
+
+            # OSC 52 clipboard support for remote sessions
+            set -g set-clipboard on
+            set -as terminal-features ",xterm-256color:clipboard"
+            set -ag terminal-overrides ",xterm-256color:Ms=\\E]52;c;%p2%s\\7"
+            set -ag terminal-overrides ",screen-256color:Ms=\\E]52;c;%p2%s\\7"
+            set -ag terminal-overrides ",tmux-256color:Ms=\\E]52;c;%p2%s\\7"
+
             set -g prefix C-b
             set -g mode-keys vi
             set -g mouse on
@@ -461,6 +469,14 @@
             setw -g monitor-activity on
             set -g visual-activity off
 
+            # Remote/SSH session support
+            set -g update-environment "SSH_AUTH_SOCK SSH_CONNECTION SSH_CLIENT SSH_TTY DISPLAY XAUTHORITY"
+            if-shell '[ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ] || [ -n "$SSH_CONNECTION" ]' {
+              set -g @ssh 1
+            } {
+              set -g @ssh 0
+            }
+
             # Status bar
             set -g status on
             set -g status-position top
@@ -469,7 +485,7 @@
             set -g status-left-length 50
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
             set -g status-right-length 100
-            set -g status-right "#[fg=${colors.peach}]N(test)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.21)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
+            set -g status-right "#[fg=${colors.peach}]N(test)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.22)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
             set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
             set -g window-status-separator "  "
