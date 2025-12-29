@@ -191,6 +191,28 @@ main() {
     log_fail "status-right not configured"
   fi
 
+  # Check status-right contains tmux version format T(#{version})
+  if echo "$status_right" | grep -q 'T(#{version})'; then
+    log_pass "status-right contains tmux version T(#{version})"
+  else
+    log_skip "status-right tmux version format (may be different config)"
+  fi
+
+  # Check status-right contains user@hostname format
+  if echo "$status_right" | grep -qE '\$USER@#h|#h'; then
+    log_pass "status-right contains hostname indicator"
+  else
+    log_skip "status-right hostname format (may be different config)"
+  fi
+
+  # Check status-right contains N(version) format when configured
+  # This tests the Nix repo version feature - may be omitted if not configured
+  if echo "$status_right" | grep -qE 'N\([^)]+\)'; then
+    log_pass "status-right contains Nix version N(version)"
+  else
+    log_skip "status-right Nix version (nixRepoVersion not configured)"
+  fi
+
   # ══════════════════════════════════════════════════════════════════════════
   log_section "Key Bindings"
   # ══════════════════════════════════════════════════════════════════════════

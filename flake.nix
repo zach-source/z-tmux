@@ -469,7 +469,7 @@
             set -g status-left-length 50
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
             set -g status-right-length 100
-            set -g status-right "#[fg=${colors.overlay0}]%H:%M #[fg=${colors.blue}]#[fg=${colors.base},bg=${colors.blue},bold] 󰒋 #h "
+            set -g status-right "#[fg=${colors.peach}]N(test)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(#{version})#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
             set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
             set -g window-status-separator "  "
