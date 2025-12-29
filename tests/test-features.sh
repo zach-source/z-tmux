@@ -191,11 +191,11 @@ main() {
     log_fail "status-right not configured"
   fi
 
-  # Check status-right contains tmux version format T(#{version})
-  if echo "$status_right" | grep -q 'T(#{version})'; then
-    log_pass "status-right contains tmux version T(#{version})"
+  # Check status-right contains z-tmux version format T(x.y.z)
+  if echo "$status_right" | grep -qE 'T\([0-9]+\.[0-9]+\.[0-9]+\)'; then
+    log_pass "status-right contains z-tmux version T(x.y.z)"
   else
-    log_skip "status-right tmux version format (may be different config)"
+    log_skip "status-right z-tmux version format (may be different config)"
   fi
 
   # Check status-right contains user@hostname format

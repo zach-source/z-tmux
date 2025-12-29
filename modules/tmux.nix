@@ -9,7 +9,7 @@ let
   cfg = config.z-tmux;
 
   # z-tmux version
-  version = "0.2.19";
+  version = "0.2.21";
 
   # ══════════════════════════════════════════════════════════════════════════
   # Plugins from nixpkgs (properly packaged with patched shebangs)
@@ -506,7 +506,7 @@ let
     set -g status-left-length 50
     set -g status-left "#[fg=${colors.green},bg=default]#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default] "
 
-    # Status right: N(nixVersion)|T(tmuxVersion)|user@host with rounded powerline
+    # Status right: N(nixVersion)|T(z-tmux version)|user@host with rounded powerline
     # Shows "nested" indicator with shifted color when inside another tmux
     set -g status-right-length 100
     set -g status-right "#{?@nested,#[fg=${nestedColors.peach},bg=default]#[fg=${nestedColors.base},bg=${nestedColors.peach},bold] 󰆘 nested #[fg=${nestedColors.peach},bg=default] ,}${
@@ -514,7 +514,7 @@ let
         "#[fg=${colors.peach}]N(${cfg.nixRepoVersion})#[fg=${colors.overlay0}]|"
       else
         ""
-    }#[fg=${colors.yellow}]T(#{version})#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
+    }#[fg=${colors.yellow}]T(${version})#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
 
     # Window status with rounded tabs
     set -g window-status-format "#[fg=${colors.surface0},bg=default]#[fg=${colors.overlay0},bg=${colors.surface0}] #I:#W#{?@claude_waiting, 󰋼,} #[fg=${colors.surface0},bg=default]"
