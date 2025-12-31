@@ -479,6 +479,7 @@ let
       # OSC 52 clipboard support for remote sessions
       # Enables copying to local clipboard when SSH'd into remote hosts
       set -g set-clipboard on
+      set -g allow-passthrough on
       set -as terminal-features ",xterm-256color:clipboard"
       # Allow tmux to set the terminal clipboard via OSC 52
       set -ag terminal-overrides ",xterm-256color:Ms=\\E]52;c;%p2%s\\7"

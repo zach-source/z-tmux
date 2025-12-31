@@ -451,6 +451,7 @@
 
             # OSC 52 clipboard support for remote sessions
             set -g set-clipboard on
+            set -g allow-passthrough on
             set -as terminal-features ",xterm-256color:clipboard"
             set -ag terminal-overrides ",xterm-256color:Ms=\\E]52;c;%p2%s\\7"
             set -ag terminal-overrides ",screen-256color:Ms=\\E]52;c;%p2%s\\7"

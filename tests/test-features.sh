@@ -172,6 +172,15 @@ main() {
     log_skip "set-clipboard not enabled (may be different config)"
   fi
 
+  # Check allow-passthrough for OSC 52
+  local allow_passthrough
+  allow_passthrough=$(tmux show-option -gv allow-passthrough 2>/dev/null || echo "")
+  if [ "$allow_passthrough" = "on" ] || [ "$allow_passthrough" = "all" ]; then
+    log_pass "allow-passthrough enabled for OSC 52 ($allow_passthrough)"
+  else
+    log_skip "allow-passthrough not enabled (may be different config)"
+  fi
+
   # Check update-environment includes SSH variables
   local update_env
   update_env=$(tmux show-option -gv update-environment 2>/dev/null || echo "")
