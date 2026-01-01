@@ -485,8 +485,8 @@
             set -g status-style "bg=default"
             set -g status-left-length 50
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
-            set -g status-right-length 100
-            set -g status-right "#[fg=${colors.peach}]N(test)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.22)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
+            set -g status-right-length 120
+            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.25)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
             set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
             set -g window-status-separator "  "
@@ -524,36 +524,37 @@
             bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-selection-and-cancel
 
             # Runtime PATH for plugin scripts (ps, kill, grep, etc.)
+            # Note: set-environment only affects new panes, so we also prepend PATH in run-shell commands
             set-environment -g PATH "${runtimePath}:$PATH"
 
             # Plugins (using nixpkgs tmuxPlugins with proper paths)
             set-environment -g TMUX_PLUGIN_MANAGER_PATH "${pluginsDir}"
-            run-shell ${plugins.sensible}/share/tmux-plugins/sensible/sensible.tmux
-            run-shell ${plugins.yank}/share/tmux-plugins/yank/yank.tmux
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.sensible}/share/tmux-plugins/sensible/sensible.tmux"
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.yank}/share/tmux-plugins/yank/yank.tmux"
 
             # Resurrect (configurable via ZTMUX_RESURRECT_DIR env var)
             set -g @resurrect-dir "$ZTMUX_RESURRECT_DIR"
             set -g @resurrect-capture-pane-contents 'on'
             set -g @resurrect-strategy-ssh 'off'
             set -g @resurrect-strategy-mosh 'off'
-            bind C-s run-shell "${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh" \; display "Session saved"
-            bind C-r run-shell "${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/restore.sh" \; display "Session restored"
-            run-shell ${plugins.resurrect}/share/tmux-plugins/resurrect/resurrect.tmux
+            bind C-s run-shell "PATH=${runtimePath}:$PATH ${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh" \; display "Session saved"
+            bind C-r run-shell "PATH=${runtimePath}:$PATH ${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/restore.sh" \; display "Session restored"
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.resurrect}/share/tmux-plugins/resurrect/resurrect.tmux"
 
             # Continuum
             set -g @continuum-save-interval '15'
             set -g @continuum-restore 'off'
-            run-shell ${plugins.continuum}/share/tmux-plugins/continuum/continuum.tmux
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.continuum}/share/tmux-plugins/continuum/continuum.tmux"
 
             # High value plugins
-            run-shell ${plugins.open}/share/tmux-plugins/open/open.tmux
-            run-shell ${plugins.sessionist}/share/tmux-plugins/sessionist/sessionist.tmux
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.open}/share/tmux-plugins/open/open.tmux"
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.sessionist}/share/tmux-plugins/sessionist/sessionist.tmux"
 
             # Optional plugins
-            run-shell ${plugins.cowboy}/share/tmux-plugins/cowboy/cowboy.tmux
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.cowboy}/share/tmux-plugins/cowboy/cowboy.tmux"
             set -g @logging-path "$ZTMUX_LOGGING_PATH"
-            run-shell ${plugins.logging}/share/tmux-plugins/logging/logging.tmux
-            run-shell ${plugins.copycat}/share/tmux-plugins/copycat/copycat.tmux
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.logging}/share/tmux-plugins/logging/logging.tmux"
+            run-shell "PATH=${runtimePath}:$PATH ${plugins.copycat}/share/tmux-plugins/copycat/copycat.tmux"
 
             # Which-key (source our pre-built init.tmux directly)
             # We don't use plugin.sh.tmux because it looks for init.tmux in the Nix store

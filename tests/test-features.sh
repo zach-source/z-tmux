@@ -245,12 +245,20 @@ main() {
     log_skip "status-right hostname format (may be different config)"
   fi
 
-  # Check status-right contains N(version) format when configured
-  # This tests the Nix repo version feature - may be omitted if not configured
-  if echo "$status_right" | grep -qE 'N\([^)]+\)'; then
-    log_pass "status-right contains Nix version N(version)"
+  # Check status-right contains D(version) format when configured
+  # This tests the dotfiles version feature - may be omitted if not configured
+  if echo "$status_right" | grep -qE 'D\([^)]+\)'; then
+    log_pass "status-right contains dotfiles version D(version)"
   else
-    log_skip "status-right Nix version (nixRepoVersion not configured)"
+    log_skip "status-right dotfiles version (dotfilesVersion not configured)"
+  fi
+
+  # Check status-right contains N(version) format when configured
+  # This tests the nvim version feature - may be omitted if not configured
+  if echo "$status_right" | grep -qE 'N\([^)]+\)'; then
+    log_pass "status-right contains nvim version N(version)"
+  else
+    log_skip "status-right nvim version (nvimVersion not configured)"
   fi
 
   # ══════════════════════════════════════════════════════════════════════════

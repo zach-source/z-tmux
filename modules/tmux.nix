@@ -9,7 +9,7 @@ let
   cfg = config.z-tmux;
 
   # z-tmux version
-  version = "0.2.22";
+  version = "0.2.25";
 
   # ══════════════════════════════════════════════════════════════════════════
   # Plugins from nixpkgs (properly packaged with patched shebangs)
@@ -534,12 +534,17 @@ let
     set -g status-left-length 50
     set -g status-left "#[fg=${colors.green},bg=default]#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default] "
 
-    # Status right: N(nixVersion)|T(z-tmux version)|user@host with rounded powerline
+    # Status right: D(dotfiles)|N(nvim)|T(z-tmux)|user@host with rounded powerline
     # Shows "nested" indicator with shifted color when inside another tmux
-    set -g status-right-length 100
+    set -g status-right-length 120
     set -g status-right "#{?@nested,#[fg=${nestedColors.peach},bg=default]#[fg=${nestedColors.base},bg=${nestedColors.peach},bold] 󰆘 nested #[fg=${nestedColors.peach},bg=default] ,}${
-      if cfg.nixRepoVersion != null then
-        "#[fg=${colors.peach}]N(${cfg.nixRepoVersion})#[fg=${colors.overlay0}]|"
+      if cfg.dotfilesVersion != null then
+        "#[fg=${colors.peach}]D(${cfg.dotfilesVersion})#[fg=${colors.overlay0}]|"
+      else
+        ""
+    }${
+      if cfg.nvimVersion != null then
+        "#[fg=${colors.green}]N(${cfg.nvimVersion})#[fg=${colors.overlay0}]|"
       else
         ""
     }#[fg=${colors.yellow}]T(${version})#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
@@ -599,6 +604,7 @@ let
     # ══════════════════════════════════════════════════════════════════════
 
     # Runtime PATH for plugin scripts (ps, kill, grep, etc.)
+    # Note: set-environment only affects new panes, so we also prepend PATH in run-shell commands
     set-environment -g PATH "${runtimePath}:$PATH"
 
     # Plugin path for compatibility
@@ -606,12 +612,12 @@ let
 
     ${lib.optionalString cfg.plugins.sensible ''
       # Sensible defaults
-      run-shell ${plugins.sensible}/share/tmux-plugins/sensible/sensible.tmux
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.sensible}/share/tmux-plugins/sensible/sensible.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.yank ''
       # Yank (clipboard)
-      run-shell ${plugins.yank}/share/tmux-plugins/yank/yank.tmux
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.yank}/share/tmux-plugins/yank/yank.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.resurrect ''
@@ -622,42 +628,42 @@ let
       set -g @resurrect-strategy-ssh 'off'
       set -g @resurrect-strategy-mosh 'off'
       # Manual save/restore keybindings
-      bind C-s run-shell "${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh" \; display "Session saved"
-      bind C-r run-shell "${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/restore.sh" \; display "Session restored"
-      run-shell ${plugins.resurrect}/share/tmux-plugins/resurrect/resurrect.tmux
+      bind C-s run-shell "PATH=${runtimePath}:$PATH ${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh" \; display "Session saved"
+      bind C-r run-shell "PATH=${runtimePath}:$PATH ${plugins.resurrect}/share/tmux-plugins/resurrect/scripts/restore.sh" \; display "Session restored"
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.resurrect}/share/tmux-plugins/resurrect/resurrect.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.continuum ''
       # Continuum (auto-save)
       set -g @continuum-save-interval '${toString cfg.saveInterval}'
       set -g @continuum-restore 'off'
-      run-shell ${plugins.continuum}/share/tmux-plugins/continuum/continuum.tmux
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.continuum}/share/tmux-plugins/continuum/continuum.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.open ''
       # Open (URLs/files from copy mode)
-      run-shell ${plugins.open}/share/tmux-plugins/open/open.tmux
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.open}/share/tmux-plugins/open/open.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.sessionist ''
       # Sessionist (session management)
-      run-shell ${plugins.sessionist}/share/tmux-plugins/sessionist/sessionist.tmux
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.sessionist}/share/tmux-plugins/sessionist/sessionist.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.cowboy ''
       # Cowboy (kill unresponsive processes)
-      run-shell ${plugins.cowboy}/share/tmux-plugins/cowboy/cowboy.tmux
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.cowboy}/share/tmux-plugins/cowboy/cowboy.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.logging ''
       # Logging (pane capture)
       set -g @logging-path "${cfg.loggingPath}"
-      run-shell ${plugins.logging}/share/tmux-plugins/logging/logging.tmux
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.logging}/share/tmux-plugins/logging/logging.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.copycat ''
       # Copycat (regex search)
-      run-shell ${plugins.copycat}/share/tmux-plugins/copycat/copycat.tmux
+      run-shell "PATH=${runtimePath}:$PATH ${plugins.copycat}/share/tmux-plugins/copycat/copycat.tmux"
     ''}
 
     ${lib.optionalString cfg.plugins.whichKey ''
@@ -776,15 +782,26 @@ in
       description = "Directory for tmuxp session configurations";
     };
 
-    nixRepoVersion = lib.mkOption {
+    dotfilesVersion = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
       description = ''
-        Version string of your Nix home repository to display in the status bar.
-        When set, displays as "N(version)" in the right status.
+        Version string of your dotfiles/nix-home repository to display in the status bar.
+        When set, displays as "D(version)" in the right status.
         When null, this section is omitted entirely.
       '';
       example = "v1.2.3";
+    };
+
+    nvimVersion = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = ''
+        Version string of your Neovim configuration to display in the status bar.
+        When set, displays as "N(version)" in the right status.
+        When null, this section is omitted entirely.
+      '';
+      example = "v2.0.0";
     };
 
     # ════════════════════════════════════════════════════════════════════════
