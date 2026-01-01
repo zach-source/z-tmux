@@ -562,8 +562,11 @@ let
 
     # Reload config
     bind r source-file ~/.tmux.conf \; display "Config reloaded!"
+    # Split/new window with current path
     bind | split-window -h -c "#{pane_current_path}"
     bind - split-window -v -c "#{pane_current_path}"
+    bind % split-window -h -c "#{pane_current_path}"
+    bind '"' split-window -v -c "#{pane_current_path}"
     bind c new-window -c "#{pane_current_path}"
     bind , command-prompt -I "#W" "rename-window '%%'"
     bind $ command-prompt -I "#S" "rename-session '%%'"

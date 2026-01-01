@@ -261,6 +261,8 @@ main() {
   check_binding "r" "reload config"
   check_binding "|" "split horizontal"
   check_binding "-" "split vertical"
+  check_binding "%" "split horizontal (default)"
+  check_binding '"' "split vertical (default)"
   check_binding "c" "new window"
   check_binding "," "rename window"
   check_binding "\$" "rename session"
