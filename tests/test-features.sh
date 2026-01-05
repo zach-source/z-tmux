@@ -498,17 +498,24 @@ main() {
   # ══════════════════════════════════════════════════════════════════════════
 
   # Try to source the config (this would fail if syntax errors)
-  if [ -f ~/.tmux.conf ]; then
+  # Check XDG path first, then fall back to legacy path
+  if [ -f ~/.config/tmux/tmux.conf ]; then
+    if tmux source-file ~/.config/tmux/tmux.conf 2>&1; then
+      log_pass "Config syntax valid (XDG path)"
+    else
+      log_fail "Config has syntax errors"
+    fi
+  elif [ -f ~/.tmux.conf ]; then
     if tmux source-file ~/.tmux.conf 2>&1; then
-      log_pass "Config syntax valid (source-file succeeded)"
+      log_pass "Config syntax valid (legacy path)"
     else
       log_fail "Config has syntax errors"
     fi
   elif [ -n "${TMUX_PLUGIN_MANAGER_PATH:-}" ]; then
     # In z-tmux environment, config should exist
-    log_fail "~/.tmux.conf not found (should be symlinked by z-tmux-test)"
+    log_fail "tmux.conf not found (should be symlinked by z-tmux-test)"
   else
-    log_skip "Config syntax (no ~/.tmux.conf found)"
+    log_skip "Config syntax (no tmux.conf found)"
   fi
 
   # ══════════════════════════════════════════════════════════════════════════

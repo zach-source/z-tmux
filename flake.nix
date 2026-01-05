@@ -486,7 +486,7 @@
             set -g status-left-length 50
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
             set -g status-right-length 120
-            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.25)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
+            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.26)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
             set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
             set -g window-status-separator "  "
@@ -497,7 +497,7 @@
             set -g pane-active-border-style "fg=${colors.blue}"
 
             # Key bindings
-            bind r source-file ~/.tmux.conf \; display "Config reloaded!"
+            bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded!"
             bind | split-window -h -c "#{pane_current_path}"
             bind - split-window -v -c "#{pane_current_path}"
             bind % split-window -h -c "#{pane_current_path}"
@@ -588,7 +588,7 @@
             export ZTMUX_LOGGING_PATH="''${ZTMUX_LOGGING_PATH:-$HOME/.tmux/logs}"
 
             if [ -n "$TMUX" ]; then
-              echo "Already in tmux. Run: tmux source-file ~/.tmux.conf"
+              echo "Already in tmux. Run: tmux source-file ~/.config/tmux/tmux.conf"
               exit 1
             fi
 
@@ -610,8 +610,9 @@
             cp -f ${whichKeyConfig} "$WHICH_KEY_DIR/config.yaml"
             cp -f ${whichKeyInit}/init.tmux "$WHICH_KEY_DIR/init.tmux"
 
-            # Symlink config for reload-config
-            ln -sf ${tmuxConfNix} "$HOME/.tmux.conf"
+            # Symlink config for reload-config (XDG path)
+            mkdir -p "$HOME/.config/tmux"
+            ln -sf ${tmuxConfNix} "$HOME/.config/tmux/tmux.conf"
 
             if [ $# -eq 0 ]; then
               exec "$TMUX_BIN" -f ${tmuxConfNix} new-session -s main "$SHELL"

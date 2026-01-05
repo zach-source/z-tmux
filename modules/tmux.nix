@@ -9,7 +9,7 @@ let
   cfg = config.z-tmux;
 
   # z-tmux version
-  version = "0.2.25";
+  version = "0.2.26";
 
   # ══════════════════════════════════════════════════════════════════════════
   # Plugins from nixpkgs (properly packaged with patched shebangs)
@@ -565,8 +565,8 @@ let
     # Key Bindings
     # ══════════════════════════════════════════════════════════════════════
 
-    # Reload config
-    bind r source-file ~/.tmux.conf \; display "Config reloaded!"
+    # Reload config (XDG path)
+    bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded!"
     # Split/new window with current path
     bind | split-window -h -c "#{pane_current_path}"
     bind - split-window -v -c "#{pane_current_path}"
@@ -907,8 +907,8 @@ in
     home.file.".tmux/resurrect/.keep" = lib.mkIf cfg.plugins.resurrect { text = ""; };
     home.file.".tmux/logs/.keep" = lib.mkIf cfg.plugins.logging { text = ""; };
 
-    # Main tmux configuration (symlink to ~/.tmux.conf for reload-config)
-    home.file.".tmux.conf".source = tmuxConf;
+    # Main tmux configuration (XDG path: ~/.config/tmux/tmux.conf)
+    xdg.configFile."tmux/tmux.conf".source = tmuxConf;
 
     # Which-key config and init (traditional ~/.tmux/ paths)
     home.file.".tmux/plugins/tmux-which-key/config.yaml" = lib.mkIf cfg.plugins.whichKey {
@@ -921,11 +921,15 @@ in
     # tmuxp session configs
     home.file.".config/tmuxp/.keep" = lib.mkIf cfg.enableTmuxp { text = ""; };
 
-    # Remove existing .tmux.conf before home-manager creates symlink
+    # Remove existing tmux.conf before home-manager creates symlink
     # This prevents "file in the way" errors when switching from manual config
+    # Cleans both legacy ~/.tmux.conf and XDG ~/.config/tmux/tmux.conf
     home.activation.cleanTmuxConf = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
       if [ -f "$HOME/.tmux.conf" ] && [ ! -L "$HOME/.tmux.conf" ]; then
         $DRY_RUN_CMD rm -f "$HOME/.tmux.conf"
+      fi
+      if [ -f "$HOME/.config/tmux/tmux.conf" ] && [ ! -L "$HOME/.config/tmux/tmux.conf" ]; then
+        $DRY_RUN_CMD rm -f "$HOME/.config/tmux/tmux.conf"
       fi
     '';
 

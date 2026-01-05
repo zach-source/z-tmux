@@ -25,7 +25,7 @@ macros:
   - name: ztmux-reload
     commands:
       - display "#{log_info} Reloading..."
-      - source-file ~/.tmux.conf
+      - source-file ~/.config/tmux/tmux.conf
       - display "#{log_info} Config reloaded!"
   - name: ztmux-restart-pane
     commands:
