@@ -93,6 +93,9 @@ items:
       - name: Choose buffer
         key: b
         command: choose-buffer -Z
+      - name: Cancel copy mode
+        key: q
+        command: send-keys -X cancel
       - separator: true
       - name: "󰏪 In copy: o=open, C-o=editor"
         key: "?"
