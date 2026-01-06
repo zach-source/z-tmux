@@ -519,6 +519,8 @@
             bind S run-shell "${tmuxpExportScript}/bin/tmux-save-layout"
             bind -T copy-mode-vi v send -X begin-selection
             bind -T copy-mode-vi y send -X copy-selection-and-cancel
+            bind -T copy-mode-vi q send -X cancel
+            bind -T copy-mode-vi Escape send -X cancel
             # Copy on mouse selection
             set -g @yank_selection_mouse 'clipboard'
             bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-selection-and-cancel
