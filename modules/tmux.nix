@@ -9,7 +9,7 @@ let
   cfg = config.z-tmux;
 
   # z-tmux version
-  version = "0.2.29";
+  version = "0.2.30";
 
   # ══════════════════════════════════════════════════════════════════════════
   # Plugins from nixpkgs (properly packaged with patched shebangs)
@@ -478,7 +478,7 @@ let
     ${lib.optionalString cfg.enableRemoteClipboard ''
       # OSC 52 clipboard support for remote sessions
       # Enables copying to local clipboard when SSH'd into remote hosts
-      set -g set-clipboard on
+      set -g set-clipboard external
       set -g allow-passthrough on
       set -as terminal-features ",xterm-256color:clipboard"
       # Allow tmux to set the terminal clipboard via OSC 52
@@ -594,12 +594,13 @@ let
 
     # Copy mode (vi style)
     bind -T copy-mode-vi v send -X begin-selection
-    bind -T copy-mode-vi y send -X copy-selection-and-cancel
+    bind -T copy-mode-vi C-v send -X rectangle-toggle
+    bind -T copy-mode-vi y send -X copy-pipe-and-cancel
+    bind -T copy-mode-vi Y send -X copy-end-of-line-and-cancel
     bind -T copy-mode-vi q send -X cancel
     bind -T copy-mode-vi Escape send -X cancel
-    # Copy on mouse selection
-    set -g @yank_selection_mouse 'clipboard'
-    bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-selection-and-cancel
+    # Copy on mouse selection (uses OSC 52 via set-clipboard external)
+    bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel
 
     # ══════════════════════════════════════════════════════════════════════
     # Plugins

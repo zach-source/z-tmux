@@ -450,7 +450,7 @@
             set -as terminal-features ",xterm-256color:RGB"
 
             # OSC 52 clipboard support for remote sessions
-            set -g set-clipboard on
+            set -g set-clipboard external
             set -g allow-passthrough on
             set -as terminal-features ",xterm-256color:clipboard"
             set -ag terminal-overrides ",xterm-256color:Ms=\\E]52;c;%p2%s\\7"
@@ -486,7 +486,7 @@
             set -g status-left-length 50
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
             set -g status-right-length 120
-            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.29)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
+            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.30)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
             set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
             set -g window-status-separator "  "
@@ -518,12 +518,13 @@
             bind Enter copy-mode
             bind S run-shell "${tmuxpExportScript}/bin/tmux-save-layout"
             bind -T copy-mode-vi v send -X begin-selection
-            bind -T copy-mode-vi y send -X copy-selection-and-cancel
+            bind -T copy-mode-vi C-v send -X rectangle-toggle
+            bind -T copy-mode-vi y send -X copy-pipe-and-cancel
+            bind -T copy-mode-vi Y send -X copy-end-of-line-and-cancel
             bind -T copy-mode-vi q send -X cancel
             bind -T copy-mode-vi Escape send -X cancel
-            # Copy on mouse selection
-            set -g @yank_selection_mouse 'clipboard'
-            bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-selection-and-cancel
+            # Copy on mouse selection (uses OSC 52 via set-clipboard external)
+            bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel
 
             # Runtime PATH for plugin scripts (ps, kill, grep, etc.)
             # Note: set-environment only affects new panes, so we also prepend PATH in run-shell commands

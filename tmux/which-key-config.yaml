@@ -97,9 +97,9 @@ items:
         key: q
         command: send-keys -X cancel
       - separator: true
-      - name: "󰏪 In copy: o=open, C-o=editor"
+      - name: "󰏪 Copy mode bindings"
         key: "?"
-        command: 'display-message "In copy mode: o opens file/URL, Ctrl-o opens in editor"'
+        command: 'display-message "v=select, C-v=rectangle, y=copy, Y=copy-line, o=open, C-o=editor"'
 
   # Search submenu (copycat)
   # Uses send-keys to trigger copycat's prefix bindings
