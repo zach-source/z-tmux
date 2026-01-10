@@ -410,6 +410,17 @@
             tmux set-window-option @claude_waiting 0 2>/dev/null
           '';
 
+          # Path to all z-tmux scripts (for run-shell commands)
+          scriptsPath = pkgs.lib.makeBinPath [
+            workspaceLauncher
+            tmuxpLoader
+            tmuxpExportScript
+            splitWindowScript
+            claudeDevScript
+            claudeMonitorScript
+            claudeClearWaitingScript
+          ];
+
           # Which-key configuration
           whichKeyConfig = ./tmux/which-key-config.yaml;
 
@@ -488,7 +499,7 @@
             set -g status-left-length 50
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
             set -g status-right-length 120
-            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.31)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
+            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.32)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
             set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
             set -g window-status-separator "  "
@@ -528,9 +539,9 @@
             # Copy on mouse selection (uses OSC 52 via set-clipboard external)
             bind -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe-and-cancel
 
-            # Runtime PATH for plugin scripts (ps, kill, grep, etc.)
+            # Runtime PATH for plugin scripts and z-tmux launcher scripts
             # Note: set-environment only affects new panes, so we also prepend PATH in run-shell commands
-            set-environment -g PATH "${runtimePath}:$PATH"
+            set-environment -g PATH "${scriptsPath}:${runtimePath}:$PATH"
 
             # Plugins (using nixpkgs tmuxPlugins with proper paths)
             set-environment -g TMUX_PLUGIN_MANAGER_PATH "${pluginsDir}"

@@ -9,7 +9,7 @@ let
   cfg = config.z-tmux;
 
   # z-tmux version
-  version = "0.2.31";
+  version = "0.2.32";
 
   # ══════════════════════════════════════════════════════════════════════════
   # Plugins from nixpkgs (properly packaged with patched shebangs)
@@ -353,6 +353,17 @@ let
     tmux set-window-option @claude_waiting 0 2>/dev/null
   '';
 
+  # Path to all z-tmux scripts (for run-shell commands)
+  scriptsPath = pkgs.lib.makeBinPath [
+    workspaceLauncher
+    tmuxpLoader
+    tmuxpExportScript
+    splitWindowScript
+    claudeDevScript
+    claudeMonitorScript
+    claudeClearWaitingScript
+  ];
+
   # ══════════════════════════════════════════════════════════════════════════
   # Which-Key Init Generator
   # ══════════════════════════════════════════════════════════════════════════
@@ -612,7 +623,7 @@ let
 
     # Runtime PATH for plugin scripts (ps, kill, grep, etc.)
     # Note: set-environment only affects new panes, so we also prepend PATH in run-shell commands
-    set-environment -g PATH "${runtimePath}:$PATH"
+    set-environment -g PATH "${scriptsPath}:${runtimePath}:$PATH"
 
     # Plugin path for compatibility
     set-environment -g TMUX_PLUGIN_MANAGER_PATH "${pluginsDir}"
