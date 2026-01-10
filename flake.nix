@@ -316,9 +316,10 @@
 
           splitWindowScript = pkgs.writeShellScriptBin "tmux-split-window" ''
             #!/usr/bin/env bash
+            # Uses pane_current_path instead of pwd (works correctly from run-shell)
             TMUX_BIN="$(command -v tmux)"
             WINDOW_NAME="''${1:-split}"
-            WORK_DIR="$(pwd)"
+            WORK_DIR="$("$TMUX_BIN" display-message -p '#{pane_current_path}')"
             "$TMUX_BIN" new-window -n "$WINDOW_NAME" -c "$WORK_DIR" \; \
               split-window -h -c "$WORK_DIR" \; \
               select-pane -L
@@ -326,8 +327,9 @@
 
           claudeDevScript = pkgs.writeShellScriptBin "tmux-claude-dev" ''
             #!/usr/bin/env bash
+            # Uses pane_current_path instead of pwd (works correctly from run-shell)
             TMUX_BIN="$(command -v tmux)"
-            WORK_DIR="$(pwd)"
+            WORK_DIR="$("$TMUX_BIN" display-message -p '#{pane_current_path}')"
             if command -v claude-smart >/dev/null 2>&1; then
               CLAUDE_CMD="claude-smart"
             elif command -v claude >/dev/null 2>&1; then
@@ -486,7 +488,7 @@
             set -g status-left-length 50
             set -g status-left "#[fg=${colors.base},bg=${colors.green},bold]  #S #[fg=${colors.green},bg=default]"
             set -g status-right-length 120
-            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.30)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
+            set -g status-right "#[fg=${colors.peach}]D(test-dotfiles)#[fg=${colors.overlay0}]|#[fg=${colors.green}]N(test-nvim)#[fg=${colors.overlay0}]|#[fg=${colors.yellow}]T(0.2.31)#[fg=${colors.overlay0}]|#[fg=${colors.blue},bg=default]#[fg=${colors.base},bg=${colors.blue},bold]  $USER@#h #[fg=${colors.blue},bg=default]"
             set -g window-status-format "#[fg=${colors.overlay0}]#I:#W#{?@claude_waiting, 󰋼,}"
             set -g window-status-current-format "#[fg=${colors.blue},bg=${colors.base}]#[bg=${colors.blue},fg=${colors.base},bold] #I:#W #[fg=${colors.blue},bg=default]"
             set -g window-status-separator "  "

@@ -36,10 +36,10 @@ macros:
       - display-popup -E -w 80% -h 60% "tmux-workspace"
   - name: ztmux-split
     commands:
-      - run-shell "tmux-split-window"
+      - run-shell -b "tmux-split-window"
   - name: ztmux-claude-dev
     commands:
-      - run-shell "tmux-claude-dev"
+      - run-shell -b "tmux-claude-dev"
 
 items:
   # Quick actions

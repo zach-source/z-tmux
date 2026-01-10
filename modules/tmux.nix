@@ -9,7 +9,7 @@ let
   cfg = config.z-tmux;
 
   # z-tmux version
-  version = "0.2.30";
+  version = "0.2.31";
 
   # ══════════════════════════════════════════════════════════════════════════
   # Plugins from nixpkgs (properly packaged with patched shebangs)
@@ -255,10 +255,12 @@ let
   splitWindowScript = pkgs.writeShellScriptBin "tmux-split-window" ''
     #!/usr/bin/env bash
     # Create a new tmux window with two vertical panes
+    # Uses pane_current_path instead of pwd (works correctly from run-shell)
 
     TMUX_BIN="$(command -v tmux)"
     WINDOW_NAME="''${1:-split}"
-    WORK_DIR="$(pwd)"
+    # Get current pane's directory (not script's pwd)
+    WORK_DIR="$("$TMUX_BIN" display-message -p '#{pane_current_path}')"
 
     "$TMUX_BIN" new-window -n "$WINDOW_NAME" -c "$WORK_DIR" \; \
       split-window -h -c "$WORK_DIR" \; \
@@ -269,9 +271,11 @@ let
   claudeDevScript = pkgs.writeShellScriptBin "tmux-claude-dev" ''
     #!/usr/bin/env bash
     # Create a new tmux window with nvim on left and claude on right
+    # Uses pane_current_path instead of pwd (works correctly from run-shell)
 
     TMUX_BIN="$(command -v tmux)"
-    WORK_DIR="$(pwd)"
+    # Get current pane's directory (not script's pwd)
+    WORK_DIR="$("$TMUX_BIN" display-message -p '#{pane_current_path}')"
 
     # Determine which claude command to use
     if command -v claude-smart >/dev/null 2>&1; then
