@@ -245,9 +245,24 @@
                 zoxide add "$WORKSPACE"
               fi
 
-              # Schedule the window creation in the main session (not the popup)
-              # Using run-shell -b runs it in background after popup closes
-              tmux run-shell -b "cd '$WORKSPACE' && tmux-claude-dev"
+              WINDOW_NAME=$(basename "$WORKSPACE")
+              CURRENT_SESSION=$(tmux display-message -p '#S')
+
+              # Create new window and capture its index (use -P to print info)
+              # This ensures we target the NEW window, not an existing one with same name
+              WINDOW_INFO=$(tmux new-window -t "$CURRENT_SESSION" -n "$WINDOW_NAME" -c "$WORKSPACE" -P -F '#{window_index}')
+              WINDOW_TARGET="$CURRENT_SESSION:$WINDOW_INFO"
+
+              # Set up claude-dev layout in the new window
+              tmux send-keys -t "$WINDOW_TARGET" "nvim ." Enter
+              tmux split-window -t "$WINDOW_TARGET" -h -c "$WORKSPACE"
+              if command -v claude-smart >/dev/null 2>&1; then
+                tmux send-keys -t "$WINDOW_TARGET" "claude-smart" Enter
+              elif command -v claude >/dev/null 2>&1; then
+                tmux send-keys -t "$WINDOW_TARGET" "claude" Enter
+              fi
+              tmux select-pane -t "$WINDOW_TARGET" -L
+              tmux select-window -t "$WINDOW_TARGET"
             fi
           '';
 
@@ -330,6 +345,8 @@
             # Uses pane_current_path instead of pwd (works correctly from run-shell)
             TMUX_BIN="$(command -v tmux)"
             WORK_DIR="$("$TMUX_BIN" display-message -p '#{pane_current_path}')"
+            CURRENT_SESSION="$("$TMUX_BIN" display-message -p '#S')"
+
             if command -v claude-smart >/dev/null 2>&1; then
               CLAUDE_CMD="claude-smart"
             elif command -v claude >/dev/null 2>&1; then
@@ -338,11 +355,15 @@
               "$TMUX_BIN" display-message "Error: neither claude-smart nor claude found in PATH"
               exit 1
             fi
-            "$TMUX_BIN" new-window -n "claude-dev" -c "$WORK_DIR" \; \
-              send-keys "nvim ." Enter \; \
-              split-window -h -c "$WORK_DIR" \; \
-              send-keys "$CLAUDE_CMD" Enter \; \
-              select-pane -L
+
+            # Create new window and capture its index for precise targeting
+            WINDOW_INFO=$("$TMUX_BIN" new-window -t "$CURRENT_SESSION" -n "claude-dev" -c "$WORK_DIR" -P -F '#{window_index}')
+            WINDOW_TARGET="$CURRENT_SESSION:$WINDOW_INFO"
+
+            "$TMUX_BIN" send-keys -t "$WINDOW_TARGET" "nvim ." Enter
+            "$TMUX_BIN" split-window -t "$WINDOW_TARGET" -h -c "$WORK_DIR"
+            "$TMUX_BIN" send-keys -t "$WINDOW_TARGET" "$CLAUDE_CMD" Enter
+            "$TMUX_BIN" select-pane -t "$WINDOW_TARGET" -L
           '';
 
           # Claude input monitoring script (singleton via flock)
