@@ -47,7 +47,7 @@ jobs:
       - name: Get current version from module
         id: current
         run: |
-          VERSION=$(grep -E '^\s*version = "' modules/tmux.nix | sed 's/.*"\(.*\)".*/\1/')
+          VERSION=$(grep -E '^\s*version = "' modules/tmux.nix | head -1 | sed 's/.*"\(.*\)".*/\1/')
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Current version in module: $VERSION"
 
