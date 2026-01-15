@@ -31,6 +31,11 @@ macros:
     commands:
       - display "#{log_info} Respawning pane..."
       - respawn-pane -k -c "#{pane_current_path}"
+  - name: ztmux-restart-command
+    commands:
+      - send-keys C-c
+      - run-shell "sleep 0.1"
+      - send-keys Up Enter
   - name: ztmux-workspace
     commands:
       - display-popup -E -w 80% -h 60% "tmux-workspace"
@@ -266,6 +271,9 @@ items:
       - name: Respawn
         key: R
         macro: ztmux-restart-pane
+      - name: "󰜎 Restart cmd"
+        key: c
+        macro: ztmux-restart-command
       - name: "󰚌 Kill process"
         key: "*"
         command: run-shell "$TMUX_PLUGIN_MANAGER_PATH/tmux-cowboy/scripts/kill.sh KILL"
